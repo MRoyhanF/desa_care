@@ -60,6 +60,14 @@
     </head>
     <body class="font-sans text-slate-900 antialiased selection:bg-primary-500 selection:text-white transition-colors duration-300">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-slate-50 dark:bg-slate-950 relative overflow-hidden">
+            <!-- Tombol Kembali -->
+            <a href="/" class="absolute top-6 left-6 sm:top-8 sm:left-8 z-30 inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-full text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm group">
+                <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                <span class="text-sm font-medium">Beranda</span>
+            </a>
+
             <!-- Decorative Background Blobs -->
             <div class="absolute top-0 right-0 -mr-20 -mt-20 w-72 h-72 rounded-full bg-primary-400 blur-[100px] opacity-20 pointer-events-none"></div>
             <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 rounded-full bg-teal-400 blur-[100px] opacity-20 pointer-events-none"></div>
