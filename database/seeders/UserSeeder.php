@@ -10,25 +10,40 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('users')->insert([
+        // First delete existing records if we run seed refresh, except if we want to run incrementally, 
+        // but DB::table('users')->insert could crash if emails duplicate. We'll use insertOrIgnore or firstOrCreate 
+        // to ensure the defaults are cleanly created.
+        
+        \App\Models\User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
             [
                 'name' => 'Admin',
-                'email' => 'admin@gmail.com',
                 'password' => Hash::make('password123'),
                 'role' => 'admin',
                 'phone' => '08123456789',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+                'email_verified_at' => now(),
+            ]
+        );
+
+        \App\Models\User::firstOrCreate(
+            ['email' => 'user@gmail.com'],
             [
                 'name' => 'User',
-                'email' => 'user@gmail.com',
                 'password' => Hash::make('password123'),
                 'role' => 'user',
                 'phone' => '08987654321',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // Generate 50 Users
+        \App\Models\User::factory(50)->create([
+            'role' => 'user'
+        ]);
+
+        // Generate 20 Admins
+        \App\Models\User::factory(20)->create([
+            'role' => 'admin'
         ]);
     }
 }
