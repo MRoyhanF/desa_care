@@ -31,6 +31,7 @@ class UserController extends Controller
             })
             ->latest()
             ->paginate($perPage)
+            ->onEachSide(1)
             ->withQueryString();
 
         return view('users', compact('users', 'search', 'role', 'perPage'));

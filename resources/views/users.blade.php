@@ -21,30 +21,34 @@
                     </div>
 
                     <!-- Search & Filter Form -->
-                    <form method="GET" action="{{ route('users.index') }}" class="w-full lg:w-auto flex flex-col sm:flex-row gap-3">
+                    <form method="GET" action="{{ route('users.index') }}" class="w-full lg:w-auto flex flex-col sm:flex-row items-center gap-3">
                         
                         <!-- Role Filter -->
-                        <select name="role" onchange="this.form.submit()" class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full sm:w-auto p-2.5 dark:text-slate-300">
-                            <option value="">Semua Role</option>
-                            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
-                        </select>
+                        <div class="relative w-full sm:w-auto">
+                            <select name="role" onchange="this.form.submit()" class="bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-full focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full pl-4 pr-10 py-2.5 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
+                                <option value="">Semua Peran</option>
+                                <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
+                            </select>
+                        </div>
 
                         <!-- Items per page -->
-                        <select name="per_page" onchange="this.form.submit()" class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full sm:w-auto p-2.5 dark:text-slate-300">
-                            <option value="5" {{ request('per_page') == '5' ? 'selected' : '' }}>5 / hal</option>
-                            <option value="10" {{ request('per_page', '5') == '10' ? 'selected' : '' }}>10 / hal</option>
-                            <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25 / hal</option>
-                            <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50 / hal</option>
-                        </select>
+                        <div class="relative w-full sm:w-auto">
+                            <select name="per_page" onchange="this.form.submit()" class="bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-full focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full pl-4 pr-10 py-2.5 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
+                                <option value="5" {{ request('per_page') == '5' ? 'selected' : '' }}>5 / hal</option>
+                                <option value="10" {{ request('per_page', '5') == '10' ? 'selected' : '' }}>10 / hal</option>
+                                <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25 / hal</option>
+                                <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50 / hal</option>
+                            </select>
+                        </div>
 
                         <!-- Search Input -->
                         <div class="relative w-full sm:w-64">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             </div>
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari..." 
-                                   class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-slate-300 transition-all shadow-sm">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari data..." 
+                                   class="w-full pl-10 pr-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-slate-300 transition-all shadow-sm hover:bg-slate-50">
                         </div>
                         
                         <!-- Submit button is hidden since we use onchange, but keep for enter key on search -->
@@ -57,12 +61,12 @@
                     <table class="w-full text-left border-collapse whitespace-nowrap">
                         <thead>
                             <tr class="bg-slate-50/50 dark:bg-slate-800/30 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-semibold">
-                                <th class="px-6 py-4">ID</th>
-                                <th class="px-6 py-4">Pengguna</th>
-                                <th class="px-6 py-4">Email</th>
-                                <th class="px-6 py-4">No. HP</th>
-                                <th class="px-6 py-4">Role</th>
-                                <th class="px-6 py-4">Bergabung</th>
+                                <th class="px-6 py-5">ID</th>
+                                <th class="px-6 py-5">Pengguna</th>
+                                <th class="px-6 py-5">Email</th>
+                                <th class="px-6 py-5">No. HP</th>
+                                <th class="px-6 py-5">Role</th>
+                                <th class="px-6 py-5">Bergabung</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -110,9 +114,9 @@
                     </table>
                 </div>
 
-                <!-- Custom Embedded Pagination (Always shows when there are any results/links, even single page wrapper for consistency) -->
+                    <!-- Custom Embedded Pagination (Always shows when there are any results/links, even single page wrapper for consistency) -->
                 <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 w-full flex-col items-center">
-                    {{ $users->links() }}
+                    {{ $users->links('vendor.pagination.tailwind') }}
                 </div>
             </div>
         </div>
