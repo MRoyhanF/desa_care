@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     
     // Admin Routes
     Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::post('/users', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
 });
 
 require __DIR__.'/auth.php';

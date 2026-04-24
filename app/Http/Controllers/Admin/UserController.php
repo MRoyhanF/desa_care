@@ -50,7 +50,24 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'role' => ['required', 'in:admin,user'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'role' => $request->role,
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'email_verified_at' => now(),
+        ]);
+
+        return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan!');
     }
 
     /**
