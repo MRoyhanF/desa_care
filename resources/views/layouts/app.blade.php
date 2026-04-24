@@ -2,9 +2,12 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
       x-data="{ 
           darkMode: false, 
-          sidebarOpen: false,
+          sidebarOpen: window.innerWidth >= 1024,
           init() { 
               this.darkMode = document.documentElement.classList.contains('dark'); 
+              window.addEventListener('resize', () => {
+                  if (window.innerWidth >= 1024) this.sidebarOpen = true;
+              });
           }, 
           toggleTheme() { 
               this.darkMode = !this.darkMode; 
@@ -59,8 +62,8 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased text-slate-900 selection:bg-primary-500 selection:text-white transition-colors duration-300">
-        <div class="min-h-screen bg-slate-50 dark:bg-slate-950 flex relative overflow-hidden">
+    <body class="font-sans antialiased text-slate-900 selection:bg-primary-500 selection:text-white transition-colors duration-300 h-screen overflow-hidden">
+        <div class="h-full bg-slate-50 dark:bg-slate-950 flex relative">
             
             <!-- Sidebar Area -->
             @if(Auth::check() && Auth::user()->role === 'admin')
@@ -70,12 +73,14 @@
             @endif
 
             <!-- Main Content Area -->
-            <div class="flex-1 flex flex-col min-w-0 transition-all duration-300 h-screen overflow-y-auto relative z-0">
+            <div class="flex-1 flex flex-col min-w-0 transition-all duration-300 relative z-0 overflow-hidden">
                 <!-- Decorative Background Blobs for depth -->
-                <div class="absolute top-0 right-0 -mr-20 -mt-20 w-72 h-72 rounded-full bg-primary-400/20 dark:bg-primary-900/20 blur-[100px] pointer-events-none -z-10"></div>
-                <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 rounded-full bg-teal-400/20 dark:bg-teal-900/20 blur-[100px] pointer-events-none -z-10"></div>
+                <div class="fixed top-0 right-0 -mr-20 -mt-20 w-72 h-72 rounded-full bg-primary-400/20 dark:bg-primary-900/20 blur-[100px] pointer-events-none -z-10"></div>
+                <div class="fixed bottom-40 left-0 -ml-20 w-72 h-72 rounded-full bg-teal-400/20 dark:bg-teal-900/20 blur-[100px] pointer-events-none -z-10"></div>
 
                 @include('layouts.navigation')
+
+                <div class="flex-1 overflow-y-auto overflow-x-hidden">
 
                 <!-- Page Heading -->
                 @if (isset($header))
@@ -86,10 +91,11 @@
                     </header>
                 @endif
 
-                <!-- Page Content -->
-                <main class="flex-1">
-                    {{ $slot }}
-                </main>
+                    <!-- Page Content -->
+                    <main class="flex-1">
+                        {{ $slot }}
+                    </main>
+                </div>
             </div>
         </div>
     </body>
