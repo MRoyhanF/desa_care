@@ -53,7 +53,7 @@ class UserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'phone' => ['nullable', 'string', 'max:20', 'unique:users,phone'],
             'role' => ['required', 'in:admin,user'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
@@ -91,7 +91,30 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users,email,'.$user->id],
+            'phone' => ['nullable', 'string', 'max:20', 'unique:users,phone,'.$user->id],
+            'role' => ['required', 'in:admin,user'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'role' => $request->role,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+        }
+
+        $user->update($data);
+
+        return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diperbarui!');
     }
 
     /**
@@ -99,6 +122,11 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        
+        // Prevent self-deletion if needed, but for now let's just delete
+        $user->delete();
+
+        return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus!');
     }
 }
