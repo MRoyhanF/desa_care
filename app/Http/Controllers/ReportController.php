@@ -11,7 +11,8 @@ class ReportController extends Controller
      */
     public function index()
     {
-        //
+        $reports = Report::latest()->paginate(10);
+        return view('reports.page', compact('reports'));
     }
 
     /**

@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class ReportLog extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'report_id',
+        'status',
+        'note',
+        'updated_by'
+    ];
+
     public function report()
     {
         return $this->belongsTo(Report::class);
