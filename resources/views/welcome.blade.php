@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Desa Bukit Mulya - Pelayanan Pengaduan Masyarakat</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logoMJ.png') }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
@@ -80,9 +83,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary-500/30">
-                        BM
-                    </div>
+                    <img src="{{ asset('images/logoMJ.png') }}" alt="Logo MJ" class="w-12 h-12 object-contain">
                     <div class="flex flex-col">
                         <span class="font-bold text-lg leading-tight tracking-tight text-slate-900 dark:text-white">Desa Bukit Mulya</span>
                         <span class="text-xs font-semibold tracking-wider text-primary-600 dark:text-primary-400 uppercase">Pengaduan Masyarakat</span>
@@ -168,8 +169,7 @@
                 
                 <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6">
                     Membangun <br/>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-teal-500">Desa Bukit Mulya</span>
-                    Bersama
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-teal-500 lowercase">Desa Bukit Mulya</span>
                 </h1>
                 
                 <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
@@ -186,6 +186,18 @@
                     <a href="#tentang" class="inline-flex justify-center items-center gap-2 px-8 py-4 rounded-full bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition-all hover:-translate-y-1 shadow-sm">
                         Pelajari Lebih Lanjut
                     </a>
+                </div>
+                <div class="mt-16 relative group max-w-5xl mx-auto">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-primary-500 to-teal-500 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <div class="relative bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden border border-slate-100 dark:border-slate-800 shadow-2xl">
+                        <img src="{{ asset('images/KantorMJ.jpeg') }}" alt="Kantor Desa Bukit Mulya" class="w-full h-auto object-cover transform transition duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-8">
+                            <div class="text-left">
+                                <p class="text-white/80 text-sm font-medium mb-1">Kantor Pusat Pelayanan</p>
+                                <h3 class="text-white text-2xl font-bold tracking-tight">Desa Bukit Mulya</h3>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -232,9 +244,7 @@
     <footer class="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                    BM
-                </div>
+                <img src="{{ asset('images/logoMJ.png') }}" alt="Logo MJ" class="w-10 h-10 object-contain">
                 <div class="flex flex-col">
                     <span class="font-bold text-lg text-slate-900 dark:text-white leading-tight">Desa Bukit Mulya</span>
                     <span class="text-xs text-slate-500">Pemerintah Desa</span>

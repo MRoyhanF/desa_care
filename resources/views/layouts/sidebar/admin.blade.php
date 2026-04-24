@@ -5,9 +5,7 @@
     <!-- Sidebar Header (Logo) -->
     <div class="h-16 flex items-center px-6 border-b border-slate-100 dark:border-slate-800">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2 group">
-            <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center text-white font-bold shadow-md group-hover:scale-105 transition-transform">
-                DM
-            </div>
+            <img src="{{ asset('images/logoMJ.png') }}" alt="Logo" class="w-10 h-10 object-contain group-hover:scale-105 transition-transform">
             <span class="font-bold text-slate-800 dark:text-slate-200 text-lg tracking-tight">Admin Area</span>
         </a>
         <!-- Mobile close button -->
