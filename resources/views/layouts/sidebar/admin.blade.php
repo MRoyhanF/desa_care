@@ -39,7 +39,7 @@
             <span class="truncate">Daftar Pengguna</span>
         </a>
         
-        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors text-slate-600 dark:text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-slate-800 dark:hover:text-primary-400">
+        <a href="{{ route('category.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors {{ request()->routeIs('category.*') ? 'text-primary-600 bg-primary-50 dark:bg-slate-800 dark:text-primary-400' : 'text-slate-600 dark:text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-slate-800 dark:hover:text-primary-400' }}">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
             <span class="truncate">Kategori Laporan</span>
         </a>

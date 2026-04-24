@@ -32,6 +32,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/users', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
     Route::put('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
+
+    // Category Routes
+    Route::get('/kategori', [\App\Http\Controllers\Admin\CategoryController::class, 'index'])->name('category.index');
+    Route::post('/kategori', [\App\Http\Controllers\Admin\CategoryController::class, 'store'])->name('category.store');
+    Route::put('/kategori/{category}', [\App\Http\Controllers\Admin\CategoryController::class, 'update'])->name('category.update');
+    Route::delete('/kategori/{category}', [\App\Http\Controllers\Admin\CategoryController::class, 'destroy'])->name('category.destroy');
 });
 
 require __DIR__.'/auth.php';
