@@ -13,9 +13,53 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-6 space-y-6">
         @csrf
         @method('patch')
+
+        <!-- Profile Photo -->
+        <div x-data="{ photoName: null, photoPreview: null }" class="col-span-6 sm:col-span-4">
+            <input type="file" class="hidden"
+                        name="photo"
+                        x-ref="photo"
+                        x-on:change="
+                                photoName = $refs.photo.files[0].name;
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    photoPreview = e.target.result;
+                                };
+                                reader.readAsDataURL($refs.photo.files[0]);
+                        ">
+
+            <x-input-label for="photo" :value="__('Profile Photo')" />
+
+            <div class="mt-2 flex items-center space-x-6">
+                <!-- Current Profile Photo -->
+                <div class="shrink-0" x-show="! photoPreview">
+                    @if($user->photo && file_exists(public_path($user->photo)))
+                        <img src="{{ asset($user->photo) }}" alt="{{ $user->name }}" class="h-24 w-24 object-cover rounded-2xl border-4 border-slate-100 dark:border-slate-800 shadow-xl">
+                    @else
+                        <div class="h-24 w-24 rounded-2xl bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center border-4 border-slate-100 dark:border-slate-800 shadow-xl">
+                            <span class="text-3xl font-black text-primary-600 dark:text-primary-400 capitalize">{{ substr($user->name, 0, 1) }}</span>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- New Profile Photo Preview -->
+                <div class="shrink-0" x-show="photoPreview" style="display: none;">
+                    <img :src="photoPreview" class="h-24 w-24 object-cover rounded-2xl border-4 border-slate-100 dark:border-slate-800 shadow-xl">
+                </div>
+
+                <div class="space-y-2">
+                    <x-secondary-button type="button" x-on:click.prevent="$refs.photo.click()">
+                        {{ __('Choose Photo') }}
+                    </x-secondary-button>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">JPG, PNG, max 2MB.</p>
+                </div>
+            </div>
+
+            <x-input-error class="mt-2" :messages="$errors->get('photo')" />
+        </div>
 
         <div>
             <x-input-label for="name" :value="__('Name')" />

@@ -156,9 +156,13 @@
 
                         <div class="mt-10 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm font-black text-slate-600 dark:text-slate-400">
-                                    {{ substr($report->user->name, 0, 1) }}
-                                </div>
+                                @if($report->user && $report->user->photo && file_exists(public_path($report->user->photo)))
+                                    <img src="{{ asset($report->user->photo) }}" alt="{{ $report->user->name }}" class="w-10 h-10 rounded-full object-cover shadow-md">
+                                @else
+                                    <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm font-black text-slate-600 dark:text-slate-400">
+                                        {{ substr($report->user->name, 0, 1) }}
+                                    </div>
+                                @endif
                                 <div>
                                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pelapor</p>
                                     <p class="text-sm font-bold text-slate-700 dark:text-slate-200">{{ $report->user->name }}</p>

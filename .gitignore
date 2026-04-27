@@ -5,6 +5,8 @@
 /public/storage
 /public/reports/*
 !/public/reports/.gitkeep
+/public/profiles/*
+!/public/profiles/.gitkeep
 /storage/*.key
 /vendor
 .env

@@ -123,9 +123,13 @@
                                 <td class="px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400">#{{ $report->id }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
-                                        <div class="h-7 w-7 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400">
-                                            {{ substr($report->user->name ?? '?', 0, 1) }}
-                                        </div>
+                                        @if($report->user && $report->user->photo && file_exists(public_path($report->user->photo)))
+                                            <img src="{{ asset($report->user->photo) }}" alt="{{ $report->user->name }}" class="h-7 w-7 rounded-full object-cover shadow-sm">
+                                        @else
+                                            <div class="h-7 w-7 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400">
+                                                {{ substr($report->user->name ?? '?', 0, 1) }}
+                                            </div>
+                                        @endif
                                         <div class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $report->user->name ?? 'Anonim' }}</div>
                                     </div>
                                 </td>
