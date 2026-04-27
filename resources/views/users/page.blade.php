@@ -131,7 +131,7 @@
                                                 {{ substr($user->name, 0, 2) }}
                                             </div>
                                         @endif
-                                        <div class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $user->name }}</div>
+                                        <a href="{{ route('users.show', $user) }}" class="text-sm font-bold text-slate-800 dark:text-slate-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">{{ $user->name }}</a>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">

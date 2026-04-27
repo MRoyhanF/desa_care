@@ -73,9 +73,13 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        //
+        $user->load(['reports.category', 'reports.logs' => function($q) {
+            $q->latest();
+        }]);
+
+        return view('users.show', compact('user'));
     }
 
     /**
