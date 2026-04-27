@@ -70,7 +70,10 @@ class ReportController extends Controller
 
             $photoPath = null;
             if ($request->hasFile('photo')) {
-                $photoPath = $request->file('photo')->store('reports', 'public');
+                $file = $request->file('photo');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('reports'), $filename);
+                $photoPath = 'reports/' . $filename;
             }
 
             $report = Report::create([
@@ -98,6 +101,23 @@ class ReportController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Report $report)
+    {
+        $user = Auth::user();
+        if ($user->role !== 'admin' && $report->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $report->load(['user', 'category', 'logs' => function($q) {
+            $q->latest();
+        }]);
+
+        return view('reports.show', compact('report'));
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Report $report)
@@ -110,11 +130,26 @@ class ReportController extends Controller
         }
 
         $validated = $request->validate([
-            'status' => 'nullable|in:pending,validated,rejected,on_progress,done',
+            'status' => 'required|in:pending,validated,rejected,on_progress,done',
             'note' => 'nullable|string',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
+
+        // Status transition logic
+        $latestStatus = $report->logs()->latest()->first()->status ?? 'pending';
+        $newStatus = $validated['status'];
+
+        if ($latestStatus !== $newStatus) {
+            $allowed = false;
+            if ($latestStatus === 'pending' && in_array($newStatus, ['validated', 'rejected'])) $allowed = true;
+            if ($latestStatus === 'validated' && $newStatus === 'on_progress') $allowed = true;
+            if ($latestStatus === 'on_progress' && $newStatus === 'done') $allowed = true;
+
+            if (!$allowed && $user->role === 'admin') {
+                return back()->withErrors(['status' => "Transisi status dari {$latestStatus} ke {$newStatus} tidak diperbolehkan."]);
+            }
+        }
 
         try {
             DB::beginTransaction();
@@ -124,7 +159,7 @@ class ReportController extends Controller
                 'description' => $validated['description'],
             ]);
 
-            if ($request->filled('status') && $user->role === 'admin') {
+            if ($request->filled('status') && $user->role === 'admin' && $latestStatus !== $newStatus) {
                 ReportLog::create([
                     'report_id' => $report->id,
                     'status' => $validated['status'],
@@ -134,7 +169,7 @@ class ReportController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('report.index')->with('success', 'Laporan berhasil diperbarui.');
+            return redirect()->route('report.show', $report)->with('success', 'Laporan berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Gagal memperbarui laporan: ' . $e->getMessage()])->withInput();

@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('report.index');
     Route::get('/laporan/buat', [\App\Http\Controllers\Admin\ReportController::class, 'create'])->name('report.create');
     Route::post('/laporan', [\App\Http\Controllers\Admin\ReportController::class, 'store'])->name('report.store');
+    Route::get('/laporan/{report}', [\App\Http\Controllers\Admin\ReportController::class, 'show'])->name('report.show');
     Route::put('/laporan/{report}', [\App\Http\Controllers\Admin\ReportController::class, 'update'])->name('report.update');
     Route::delete('/laporan/{report}', [\App\Http\Controllers\Admin\ReportController::class, 'destroy'])->name('report.destroy');
 });

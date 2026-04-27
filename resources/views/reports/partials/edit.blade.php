@@ -75,7 +75,7 @@
                         <!-- Photo Section -->
                         <div x-show="editData.photo">
                             <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Lampiran Foto</label>
-                            <img :src="'{{ asset('storage') }}/' + editData.photo" alt="Lampiran" class="w-full h-32 object-cover rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm cursor-pointer hover:opacity-90 transition-opacity" @click="window.open('{{ asset('storage') }}/' + editData.photo, '_blank')">
+                            <img :src="'{{ asset('') }}' + editData.photo" alt="Lampiran" class="w-full h-32 object-cover rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm cursor-pointer hover:opacity-90 transition-opacity" @click="window.open('{{ asset('') }}' + editData.photo, '_blank')">
                         </div>
                     </div>
 

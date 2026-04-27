@@ -3,6 +3,8 @@
 /public/build
 /public/hot
 /public/storage
+/public/reports/*
+!/public/reports/.gitkeep
 /storage/*.key
 /vendor
 .env
