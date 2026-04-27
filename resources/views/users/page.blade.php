@@ -96,8 +96,11 @@
                                    class="w-full pl-10 pr-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-slate-300 transition-all shadow-sm hover:bg-slate-50">
                         </div>
                         
-                        <!-- Submit button is hidden since we use onchange, but keep for enter key on search -->
-                        <button type="submit" class="hidden">Cari</button>
+                        <!-- Manual Search Button -->
+                        <button type="submit" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-6 py-2.5 rounded-full font-bold text-sm transition-all hover:bg-slate-800 dark:hover:bg-white shadow-lg active:scale-95">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            Cari
+                        </button>
                     </form>
                 </div>
 
@@ -121,9 +124,13 @@
                                 <td class="px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400">#{{ $user->id }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="h-8 w-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-xs uppercase">
-                                            {{ substr($user->name, 0, 2) }}
-                                        </div>
+                                        @if($user->photo && file_exists(public_path($user->photo)))
+                                            <img src="{{ asset($user->photo) }}" alt="{{ $user->name }}" class="h-8 w-8 rounded-full object-cover border border-slate-100 dark:border-slate-800 shadow-sm">
+                                        @else
+                                            <div class="h-8 w-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-xs uppercase">
+                                                {{ substr($user->name, 0, 2) }}
+                                            </div>
+                                        @endif
                                         <div class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $user->name }}</div>
                                     </div>
                                 </td>
