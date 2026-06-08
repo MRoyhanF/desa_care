@@ -59,7 +59,7 @@
                                     class="!text-red-600 dark:!text-red-400 hover:!bg-red-50 dark:hover:!bg-red-900/20"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Keluar / Log Out') }}
+                                {{ __('Keluar') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>

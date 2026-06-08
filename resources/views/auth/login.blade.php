@@ -7,14 +7,14 @@
 
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" :value="__('Alamat Email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <!-- Password -->
         <div class="mt-4" x-data="{ show: false }">
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" :value="__('Kata Sandi')" />
 
             <div class="relative">
                 <x-text-input id="password" class="block mt-1 w-full pr-10"
@@ -37,19 +37,19 @@
         <div class="block mt-4">
             <label for="remember_me" class="inline-flex items-center">
                 <input id="remember_me" type="checkbox" class="rounded dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-primary-600 shadow-sm focus:ring-primary-500 dark:focus:ring-primary-600 dark:focus:ring-offset-slate-800" name="remember">
-                <span class="ms-2 text-sm text-slate-600 dark:text-slate-400">{{ __('Remember me') }}</span>
+                <span class="ms-2 text-sm text-slate-600 dark:text-slate-400">{{ __('Ingat saya') }}</span>
             </label>
         </div>
 
         <div class="flex items-center justify-end mt-6">
             @if (Route::has('password.request'))
                 <a class="underline text-sm text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-slate-800 transition-colors" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
+                    {{ __('Lupa kata sandi?') }}
                 </a>
             @endif
 
             <x-primary-button class="ms-4 shadow-lg shadow-primary-500/30">
-                {{ __('Log in') }}
+                {{ __('Masuk') }}
             </x-primary-button>
         </div>
     </form>
