@@ -5,9 +5,14 @@
         </h2>
     </x-slot>
 
+    <!-- Chart.js CDN -->
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    @endpush
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
-            
+
             <!-- Welcome Section -->
             <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-800 rounded-3xl shadow-xl p-8 relative overflow-hidden">
                 <div class="absolute top-0 right-0 -m-4 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl"></div>
@@ -29,64 +34,115 @@
                 </div>
             </div>
 
-            <!-- Statistics Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Total Card -->
-                <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-800 rounded-3xl shadow-xl p-6 transition-all hover:scale-[1.02]">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        </div>
-                        <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Total Laporan</span>
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                @php
+                    $cards = [
+                        ['label' => 'Total Laporan',  'value' => $stats['total'],       'color' => 'slate',   'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+                        ['label' => 'Kategori',       'value' => $totalCategories,      'color' => 'violet',  'icon' => 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'],
+                        ['label' => 'Pending',        'value' => $stats['pending'],     'color' => 'amber',   'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
+                        ['label' => 'Diproses',       'value' => $stats['on_progress'], 'color' => 'blue',    'icon' => 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'],
+                        ['label' => 'Selesai',        'value' => $stats['done'],        'color' => 'emerald', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
+                        ['label' => 'Ditolak',        'value' => $stats['rejected'],    'color' => 'rose',    'icon' => 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'],
+                    ];
+                @endphp
+
+                @foreach($cards as $card)
+                <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-800 rounded-2xl shadow-lg p-5 transition-all hover:scale-[1.03]">
+                    <div class="w-10 h-10 bg-{{ $card['color'] }}-100 dark:bg-{{ $card['color'] }}-900/30 rounded-xl flex items-center justify-center mb-3">
+                        <svg class="w-5 h-5 text-{{ $card['color'] }}-600 dark:text-{{ $card['color'] }}-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"></path>
+                        </svg>
                     </div>
-                    <div class="flex items-end justify-between">
-                        <h4 class="text-4xl font-black text-slate-800 dark:text-white leading-none">{{ $stats['total'] }}</h4>
-                        <span class="text-xs font-bold text-slate-400">Seluruhnya</span>
+                    <p class="text-3xl font-black text-slate-800 dark:text-white leading-none mb-1">{{ $card['value'] }}</p>
+                    <p class="text-[10px] font-black uppercase tracking-widest text-{{ $card['color'] }}-600 dark:text-{{ $card['color'] }}-400">{{ $card['label'] }}</p>
+                </div>
+                @endforeach
+            </div>
+
+            @if($stats['total'] > 0)
+            <!-- Charts Row 1: Per Category + Status Distribution -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- Chart 1: Reports per Category (Bar) -->
+                <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-800 rounded-3xl shadow-xl p-6">
+                    <h4 class="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-6">
+                        <span class="w-1 h-5 bg-primary-600 rounded-full"></span>
+                        Jumlah Laporan per Kategori
+                    </h4>
+                    @if($reportsPerCategory->where('total', '>', 0)->count() > 0)
+                    <div class="relative" style="height:280px">
+                        <canvas id="chartPerCategory"></canvas>
                     </div>
+                    @else
+                    <div class="flex flex-col items-center justify-center h-64 text-slate-400">
+                        <svg class="w-12 h-12 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        <p class="text-sm font-medium">Belum ada data kategori</p>
+                    </div>
+                    @endif
                 </div>
 
-                <!-- Pending Card -->
-                <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-800 rounded-3xl shadow-xl p-6 transition-all hover:scale-[1.02]">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <!-- Chart 2: Overall Status Distribution (Doughnut) -->
+                <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-800 rounded-3xl shadow-xl p-6">
+                    <h4 class="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-6">
+                        <span class="w-1 h-5 bg-violet-600 rounded-full"></span>
+                        Distribusi Status Seluruh Laporan
+                    </h4>
+                    <div class="flex flex-col sm:flex-row items-center gap-6">
+                        <div class="relative flex-shrink-0" style="height:220px;width:220px">
+                            <canvas id="chartStatusDoughnut"></canvas>
                         </div>
-                        <span class="text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-widest">Pending</span>
-                    </div>
-                    <div class="flex items-end justify-between">
-                        <h4 class="text-4xl font-black text-slate-800 dark:text-white leading-none">{{ $stats['pending'] }}</h4>
-                        <span class="text-xs font-bold text-amber-500">Butuh Review</span>
-                    </div>
-                </div>
-
-                <!-- In Progress Card -->
-                <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-800 rounded-3xl shadow-xl p-6 transition-all hover:scale-[1.02]">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        <!-- Legend -->
+                        <div class="flex flex-col gap-2 w-full">
+                            @php
+                                $statusMeta = [
+                                    'pending'     => ['label' => 'Pending',    'color' => '#f59e0b'],
+                                    'validated'   => ['label' => 'Tervalidasi','color' => '#10b981'],
+                                    'on_progress' => ['label' => 'Diproses',   'color' => '#3b82f6'],
+                                    'done'        => ['label' => 'Selesai',    'color' => '#22c55e'],
+                                    'rejected'    => ['label' => 'Ditolak',    'color' => '#f43f5e'],
+                                ];
+                            @endphp
+                            @foreach($allStatuses as $status)
+                            @php $meta = $statusMeta[$status] ?? ['label' => ucfirst($status), 'color' => '#94a3b8']; @endphp
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full flex-shrink-0" style="background:{{ $meta['color'] }}"></span>
+                                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">{{ $meta['label'] }}</span>
+                                </div>
+                                <span class="text-xs font-black text-slate-800 dark:text-white">{{ $stats[$status] ?? 0 }}</span>
+                            </div>
+                            @endforeach
                         </div>
-                        <span class="text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest">Diproses</span>
-                    </div>
-                    <div class="flex items-end justify-between">
-                        <h4 class="text-4xl font-black text-slate-800 dark:text-white leading-none">{{ $stats['on_progress'] }}</h4>
-                        <span class="text-xs font-bold text-blue-500">Sedang Berjalan</span>
-                    </div>
-                </div>
-
-                <!-- Done Card -->
-                <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-800 rounded-3xl shadow-xl p-6 transition-all hover:scale-[1.02]">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                        <span class="text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest">Selesai</span>
-                    </div>
-                    <div class="flex items-end justify-between">
-                        <h4 class="text-4xl font-black text-slate-800 dark:text-white leading-none">{{ $stats['done'] }}</h4>
-                        <span class="text-xs font-bold text-emerald-500">Terselesaikan</span>
                     </div>
                 </div>
             </div>
+
+            <!-- Chart 3: Status per Category (Stacked Bar) -->
+            <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-800 rounded-3xl shadow-xl p-6">
+                <h4 class="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-6">
+                    <span class="w-1 h-5 bg-blue-600 rounded-full"></span>
+                    Distribusi Status per Kategori
+                </h4>
+                @if($statusPerCategory->count() > 0)
+                <div class="relative" style="height:320px">
+                    <canvas id="chartStatusPerCategory"></canvas>
+                </div>
+                @else
+                <div class="flex flex-col items-center justify-center h-48 text-slate-400">
+                    <svg class="w-12 h-12 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <p class="text-sm font-medium">Belum ada data</p>
+                </div>
+                @endif
+            </div>
+            @else
+            <!-- Empty state when no reports at all -->
+            <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-800 rounded-3xl shadow-xl p-16 text-center">
+                <svg class="w-16 h-16 mx-auto mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <p class="text-slate-500 dark:text-slate-400 font-semibold text-lg">Belum ada laporan</p>
+                <p class="text-slate-400 text-sm mt-1">Statistik akan ditampilkan setelah laporan pertama dibuat.</p>
+            </div>
+            @endif
 
             <!-- Recent Activity Table -->
             <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-800 rounded-3xl shadow-xl overflow-hidden">
@@ -109,15 +165,11 @@
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                             @forelse($recentReports as $report)
-                            @php
-                                $ls = $report->logs->first()->status ?? 'pending';
-                            @endphp
+                            @php $ls = $report->logs->first()->status ?? 'pending'; @endphp
                             <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-all">
                                 <td class="px-8 py-5">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500">
-                                            #{{ $report->id }}
-                                        </div>
+                                        <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500">#{{ $report->id }}</div>
                                         <div>
                                             <p class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $report->title }}</p>
                                             <p class="text-[10px] text-slate-400">{{ $report->created_at->diffForHumans() }}</p>
@@ -128,17 +180,17 @@
                                     <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-500">{{ $report->category->name }}</span>
                                 </td>
                                 <td class="px-8 py-5">
-                                    @if($ls === 'pending')
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Pending</span>
-                                    @elseif($ls === 'validated')
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Valid</span>
-                                    @elseif($ls === 'on_progress')
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Proses</span>
-                                    @elseif($ls === 'done')
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">Selesai</span>
-                                    @else
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">Ditolak</span>
-                                    @endif
+                                    @php
+                                        $statusBadge = [
+                                            'pending'     => ['bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',   'Pending'],
+                                            'validated'   => ['bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400', 'Valid'],
+                                            'on_progress' => ['bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',       'Proses'],
+                                            'done'        => ['bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400', 'Selesai'],
+                                            'rejected'    => ['bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',       'Ditolak'],
+                                        ];
+                                        [$badgeClass, $badgeLabel] = $statusBadge[$ls] ?? ['bg-slate-100 text-slate-700', ucfirst($ls)];
+                                    @endphp
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase {{ $badgeClass }}">{{ $badgeLabel }}</span>
                                 </td>
                                 <td class="px-8 py-5 text-right">
                                     <a href="{{ route('report.show', $report) }}" class="inline-flex items-center justify-center p-2 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 hover:bg-primary-100 transition-all">
@@ -157,4 +209,182 @@
             </div>
         </div>
     </div>
+
+    @if($stats['total'] > 0)
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+    (function () {
+        const isDark = () => document.documentElement.classList.contains('dark');
+        const gridColor = () => isDark() ? 'rgba(148,163,184,0.1)' : 'rgba(148,163,184,0.2)';
+        const textColor = () => isDark() ? '#94a3b8' : '#64748b';
+
+        const STATUS_COLORS = {
+            pending:     '#f59e0b',
+            validated:   '#10b981',
+            on_progress: '#3b82f6',
+            done:        '#22c55e',
+            rejected:    '#f43f5e',
+        };
+        const STATUS_LABELS = {
+            pending:     'Pending',
+            validated:   'Tervalidasi',
+            on_progress: 'Diproses',
+            done:        'Selesai',
+            rejected:    'Ditolak',
+        };
+
+        // ── Chart 1: Reports per Category ──────────────────────────────
+        @if($reportsPerCategory->where('total', '>', 0)->count() > 0)
+        const catLabels = @json($reportsPerCategory->pluck('name'));
+        const catTotals = @json($reportsPerCategory->pluck('total'));
+
+        const palette = ['#22c55e','#3b82f6','#f59e0b','#f43f5e','#8b5cf6','#06b6d4','#ec4899','#14b8a6','#f97316','#a3e635'];
+
+        new Chart(document.getElementById('chartPerCategory'), {
+            type: 'bar',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    label: 'Jumlah Laporan',
+                    data: catTotals,
+                    backgroundColor: catLabels.map((_, i) => palette[i % palette.length] + 'cc'),
+                    borderColor: catLabels.map((_, i) => palette[i % palette.length]),
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` ${ctx.parsed.y} laporan`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: gridColor() },
+                        ticks: { color: textColor(), font: { size: 11, weight: '600' } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor() },
+                        ticks: { color: textColor(), precision: 0 }
+                    }
+                }
+            }
+        });
+        @endif
+
+        // ── Chart 2: Overall Status Doughnut ───────────────────────────
+        @php
+            $doughnutStatuses = array_filter(array_keys($statusMeta ?? [
+                'pending'=>1,'validated'=>1,'on_progress'=>1,'done'=>1,'rejected'=>1
+            ]), fn($s) => ($stats[$s] ?? 0) > 0);
+        @endphp
+        @if(count($doughnutStatuses) > 0)
+        const dStatuses = @json(array_values($doughnutStatuses));
+        const dValues   = @json(array_map(fn($s) => $stats[$s] ?? 0, array_values($doughnutStatuses)));
+
+        new Chart(document.getElementById('chartStatusDoughnut'), {
+            type: 'doughnut',
+            data: {
+                labels: dStatuses.map(s => STATUS_LABELS[s] ?? s),
+                datasets: [{
+                    data: dValues,
+                    backgroundColor: dStatuses.map(s => (STATUS_COLORS[s] ?? '#94a3b8') + 'dd'),
+                    borderColor: dStatuses.map(s => STATUS_COLORS[s] ?? '#94a3b8'),
+                    borderWidth: 2,
+                    hoverOffset: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` ${ctx.label}: ${ctx.parsed} laporan`
+                        }
+                    }
+                }
+            }
+        });
+        @endif
+
+        // ── Chart 3: Status per Category (Stacked Bar) ─────────────────
+        @if($statusPerCategory->count() > 0)
+        const rawData = @json($statusPerCategory);
+
+        // Build unique sorted category labels
+        const catSet = [...new Set(rawData.map(r => r.category))];
+
+        // Build unique statuses from data
+        const statusSet = [...new Set(rawData.map(r => r.status))];
+
+        // Build dataset per status
+        const stackedDatasets = statusSet.map(status => {
+            return {
+                label: STATUS_LABELS[status] ?? status,
+                data: catSet.map(cat => {
+                    const found = rawData.find(r => r.category === cat && r.status === status);
+                    return found ? found.total : 0;
+                }),
+                backgroundColor: (STATUS_COLORS[status] ?? '#94a3b8') + 'cc',
+                borderColor: STATUS_COLORS[status] ?? '#94a3b8',
+                borderWidth: 2,
+                borderRadius: 4,
+                borderSkipped: false,
+            };
+        });
+
+        new Chart(document.getElementById('chartStatusPerCategory'), {
+            type: 'bar',
+            data: { labels: catSet, datasets: stackedDatasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: textColor(),
+                            font: { size: 11, weight: '600' },
+                            boxWidth: 12,
+                            borderRadius: 4,
+                            useBorderRadius: true,
+                            padding: 16,
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} laporan`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { color: gridColor() },
+                        ticks: { color: textColor(), font: { size: 11, weight: '600' } }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        grid: { color: gridColor() },
+                        ticks: { color: textColor(), precision: 0 }
+                    }
+                }
+            }
+        });
+        @endif
+    })();
+    </script>
+    @endif
 </x-app-layout>
