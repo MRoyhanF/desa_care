@@ -1,12 +1,16 @@
 /.phpunit.cache
 /node_modules
 /public/build
+/public/laporan
+/public/profil
+/public/profil/*
 /public/hot
 /public/storage
 /public/reports/*
 !/public/reports/.gitkeep
 /public/profiles/*
 !/public/profiles/.gitkeep
+!/public/profil/.gitkeep
 /storage/*.key
 /vendor
 .env
