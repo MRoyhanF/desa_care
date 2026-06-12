@@ -21,7 +21,11 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
-        $user->fill($request->validated());
+        $validated = $request->validated();
+
+        $user->nama    = $validated['nama'];
+        $user->email   = $validated['email'];
+        $user->telepon = $validated['telepon'] ?? null;
 
         if ($user->isDirty('email')) {
             $user->email_terverifikasi_pada = null;

@@ -20,7 +20,7 @@
         <!-- Profile Photo -->
         <div x-data="{ photoName: null, photoPreview: null }" class="col-span-6 sm:col-span-4">
             <input type="file" class="hidden"
-                        name="photo"
+                        name="foto"
                         x-ref="photo"
                         x-on:change="
                                 photoName = $refs.photo.files[0].name;
@@ -36,11 +36,11 @@
             <div class="mt-2 flex items-center space-x-6">
                 <!-- Current Profile Photo -->
                 <div class="shrink-0" x-show="! photoPreview">
-                    @if($user->photo && file_exists(public_path($user->photo)))
-                        <img src="{{ asset($user->photo) }}" alt="{{ $user->name }}" class="h-24 w-24 object-cover rounded-2xl border-4 border-slate-100 dark:border-slate-800 shadow-xl">
+                    @if($user->foto && file_exists(public_path($user->foto)))
+                        <img src="{{ asset($user->foto) }}" alt="{{ $user->nama }}" class="h-24 w-24 object-cover rounded-2xl border-4 border-slate-100 dark:border-slate-800 shadow-xl">
                     @else
                         <div class="h-24 w-24 rounded-2xl bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center border-4 border-slate-100 dark:border-slate-800 shadow-xl">
-                            <span class="text-3xl font-black text-primary-600 dark:text-primary-400 capitalize">{{ substr($user->name, 0, 1) }}</span>
+                            <span class="text-3xl font-black text-primary-600 dark:text-primary-400 capitalize">{{ substr($user->nama, 0, 1) }}</span>
                         </div>
                     @endif
                 </div>
@@ -62,9 +62,9 @@
         </div>
 
         <div>
-            <x-input-label for="name" :value="__('Nama')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            <x-input-label for="nama" :value="__('Nama')" />
+            <x-text-input id="nama" name="nama" type="text" class="mt-1 block w-full" :value="old('nama', $user->nama)" required autofocus autocomplete="name" />
+            <x-input-error class="mt-2" :messages="$errors->get('nama')" />
         </div>
 
         <div>
@@ -92,9 +92,9 @@
         </div>
 
         <div>
-            <x-input-label for="phone" :value="__('Nomor Telepon')" />
-            <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $user->phone)" placeholder="Contoh: 08123456789" autocomplete="tel" />
-            <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+            <x-input-label for="telepon" :value="__('Nomor Telepon')" />
+            <x-text-input id="telepon" name="telepon" type="text" class="mt-1 block w-full" :value="old('telepon', $user->telepon)" placeholder="Contoh: 08123456789" autocomplete="tel" />
+            <x-input-error class="mt-2" :messages="$errors->get('telepon')" />
         </div>
 
         <div class="flex items-center gap-4">

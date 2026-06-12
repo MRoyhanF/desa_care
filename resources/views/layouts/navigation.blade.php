@@ -28,14 +28,14 @@
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-slate-500 dark:text-slate-400 bg-transparent hover:text-slate-700 dark:hover:text-slate-300 focus:outline-none transition ease-in-out duration-150">
                             <div class="flex items-center gap-2">
-                                @if(Auth::user()->photo && file_exists(public_path(Auth::user()->photo)))
-                                    <img src="{{ asset(Auth::user()->photo) }}" alt="{{ Auth::user()->name }}" class="w-8 h-8 rounded-full object-cover border-2 border-primary-500/30">
+                                @if(Auth::user()->foto && file_exists(public_path(Auth::user()->foto)))
+                                    <img src="{{ asset(Auth::user()->foto) }}" alt="{{ Auth::user()->nama }}" class="w-8 h-8 rounded-full object-cover border-2 border-primary-500/30">
                                 @else
                                     <div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold uppercase">
-                                        {{ substr(Auth::user()->name, 0, 1) }}
+                                        {{ substr(Auth::user()->nama, 0, 1) }}
                                     </div>
                                 @endif
-                                <span class="hidden sm:block">{{ Auth::user()->name }}</span>
+                                <span class="hidden sm:block">{{ Auth::user()->nama }}</span>
                             </div>
 
                             <div class="ms-1 hidden sm:block">
