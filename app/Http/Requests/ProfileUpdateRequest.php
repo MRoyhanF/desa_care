@@ -8,18 +8,26 @@ use Illuminate\Validation\Rule;
 
 class ProfileUpdateRequest extends FormRequest
 {
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
-     */
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
-            'phone' => ['nullable', 'string', 'max:15'],
-            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'nama'   => ['required', 'string', 'max:255'],
+            'email'  => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('pengguna')->ignore($this->user()->id)],
+            'telepon' => ['nullable', 'string', 'max:15'],
+            'foto'   => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'nama.required'   => 'Nama wajib diisi.',
+            'email.required'  => 'Email wajib diisi.',
+            'email.unique'    => 'Email sudah digunakan.',
+            'telepon.max'     => 'Nomor telepon maksimal 15 karakter.',
+            'foto.image'      => 'File harus berupa gambar.',
+            'foto.mimes'      => 'Format gambar harus jpeg, png, atau jpg.',
+            'foto.max'        => 'Ukuran gambar maksimal 2MB.',
         ];
     }
 }

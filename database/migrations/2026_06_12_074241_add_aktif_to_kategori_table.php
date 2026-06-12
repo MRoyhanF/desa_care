@@ -11,18 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('photo')->nullable()->after('email');
+        Schema::table('kategori', function (Blueprint $table) {
+            $table->boolean('aktif')->default(true)->after('nama');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('photo');
+        Schema::table('kategori', function (Blueprint $table) {
+            $table->dropColumn('aktif');
         });
     }
 };

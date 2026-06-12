@@ -13,101 +13,95 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $isAdmin = $user->role === 'admin';
+        $isAdmin = $user->peran === 'admin';
 
-        // Base report query scope
-        $baseQuery = fn() => Report::when(!$isAdmin, fn($q) => $q->where('user_id', $user->id));
-
-        // Efficient stats: get latest log status per report via subquery
-        $statusCounts = DB::table('reports')
+        $jumlahStatus = DB::table('laporan')
             ->select(
-                DB::raw('COALESCE(latest_logs.status, "pending") as status'),
+                DB::raw('COALESCE(log_terkini.status, "menunggu") as status'),
                 DB::raw('COUNT(*) as total')
             )
             ->leftJoinSub(
-                DB::table('report_logs')
-                    ->select('report_id', 'status')
+                DB::table('log_laporan')
+                    ->select('laporan_id', 'status')
                     ->whereIn('id', function ($sub) {
                         $sub->select(DB::raw('MAX(id)'))
-                            ->from('report_logs')
-                            ->groupBy('report_id');
+                            ->from('log_laporan')
+                            ->groupBy('laporan_id');
                     }),
-                'latest_logs',
-                'reports.id',
+                'log_terkini',
+                'laporan.id',
                 '=',
-                'latest_logs.report_id'
+                'log_terkini.laporan_id'
             )
-            ->when(!$isAdmin, fn($q) => $q->where('reports.user_id', $user->id))
+            ->when(!$isAdmin, fn($q) => $q->where('laporan.pengguna_id', $user->id))
+            ->whereNull('laporan.deleted_at')
             ->groupBy('status')
             ->pluck('total', 'status');
 
-        $stats = [
-            'total'       => $statusCounts->sum(),
-            'pending'     => $statusCounts->get('pending', 0),
-            'validated'   => $statusCounts->get('validated', 0),
-            'on_progress' => $statusCounts->get('on_progress', 0),
-            'done'        => $statusCounts->get('done', 0),
-            'rejected'    => $statusCounts->get('rejected', 0),
+        $statistik = [
+            'total'      => $jumlahStatus->sum(),
+            'menunggu'   => $jumlahStatus->get('menunggu', 0),
+            'tervalidasi' => $jumlahStatus->get('tervalidasi', 0),
+            'diproses'   => $jumlahStatus->get('diproses', 0),
+            'selesai'    => $jumlahStatus->get('selesai', 0),
+            'ditolak'    => $jumlahStatus->get('ditolak', 0),
         ];
 
-        // All statuses present in data (dynamic)
-        $allStatuses = $statusCounts->keys()->toArray();
+        $semuaStatus = $jumlahStatus->keys()->toArray();
 
-        // Reports per category
-        $reportsPerCategory = Category::select('categories.id', 'categories.name')
-            ->selectRaw('COUNT(reports.id) as total')
-            ->leftJoin('reports', function ($join) use ($isAdmin, $user) {
-                $join->on('categories.id', '=', 'reports.category_id');
+        $laporanPerKategori = Category::select('kategori.id', 'kategori.nama')
+            ->selectRaw('COUNT(laporan.id) as total')
+            ->leftJoin('laporan', function ($join) use ($isAdmin, $user) {
+                $join->on('kategori.id', '=', 'laporan.kategori_id')
+                     ->whereNull('laporan.deleted_at');
                 if (!$isAdmin) {
-                    $join->where('reports.user_id', '=', $user->id);
+                    $join->where('laporan.pengguna_id', '=', $user->id);
                 }
             })
-            ->groupBy('categories.id', 'categories.name')
+            ->groupBy('kategori.id', 'kategori.nama')
             ->orderByDesc('total')
             ->get();
 
-        // Status distribution per category (for stacked chart)
-        $statusPerCategory = DB::table('reports')
+        $statusPerKategori = DB::table('laporan')
             ->select(
-                'categories.name as category',
-                DB::raw('COALESCE(latest_logs.status, "pending") as status'),
+                'kategori.nama as kategori',
+                DB::raw('COALESCE(log_terkini.status, "menunggu") as status'),
                 DB::raw('COUNT(*) as total')
             )
-            ->join('categories', 'reports.category_id', '=', 'categories.id')
+            ->join('kategori', 'laporan.kategori_id', '=', 'kategori.id')
             ->leftJoinSub(
-                DB::table('report_logs')
-                    ->select('report_id', 'status')
+                DB::table('log_laporan')
+                    ->select('laporan_id', 'status')
                     ->whereIn('id', function ($sub) {
                         $sub->select(DB::raw('MAX(id)'))
-                            ->from('report_logs')
-                            ->groupBy('report_id');
+                            ->from('log_laporan')
+                            ->groupBy('laporan_id');
                     }),
-                'latest_logs',
-                'reports.id',
+                'log_terkini',
+                'laporan.id',
                 '=',
-                'latest_logs.report_id'
+                'log_terkini.laporan_id'
             )
-            ->when(!$isAdmin, fn($q) => $q->where('reports.user_id', $user->id))
-            ->groupBy('categories.name', 'status')
+            ->when(!$isAdmin, fn($q) => $q->where('laporan.pengguna_id', $user->id))
+            ->whereNull('laporan.deleted_at')
+            ->groupBy('kategori.nama', 'status')
             ->get();
 
-        // Total categories
-        $totalCategories = Category::count();
+        $totalKategori = Category::count();
 
-        // Recent reports
-        $recentReports = Report::with(['category', 'logs' => fn($q) => $q->latest()])
-            ->when(!$isAdmin, fn($q) => $q->where('user_id', $user->id))
+        $laporanTerbaru = Report::with(['kategori', 'logLaporan' => fn($q) => $q->latest()])
+            ->when(!$isAdmin, fn($q) => $q->where('pengguna_id', $user->id))
             ->latest()
             ->take(5)
             ->get();
 
         return view('dashboard', compact(
-            'stats',
-            'recentReports',
-            'reportsPerCategory',
-            'statusPerCategory',
-            'allStatuses',
-            'totalCategories'
+            'statistik',
+            'laporanTerbaru',
+            'laporanPerKategori',
+            'statusPerKategori',
+            'semuaStatus',
+            'totalKategori'
         ));
     }
 }

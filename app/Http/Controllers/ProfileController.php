@@ -11,9 +11,6 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
     public function edit(Request $request): View
     {
         return view('profile.edit', [
@@ -21,28 +18,24 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
         $user->fill($request->validated());
 
         if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
+            $user->email_terverifikasi_pada = null;
         }
 
-        if ($request->hasFile('photo')) {
-            // Delete old photo if exists in public/profiles
-            if ($user->photo && file_exists(public_path($user->photo))) {
-                unlink(public_path($user->photo));
+        if ($request->hasFile('foto')) {
+            if ($user->foto && file_exists(public_path($user->foto))) {
+                unlink(public_path($user->foto));
             }
 
-            $file = $request->file('photo');
+            $file = $request->file('foto');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('profiles'), $filename);
-            $user->photo = 'profiles/' . $filename;
+            $file->move(public_path('profil'), $filename);
+            $user->foto = 'profil/' . $filename;
         }
 
         $user->save();
@@ -50,9 +43,6 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-    /**
-     * Delete the user's account.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [

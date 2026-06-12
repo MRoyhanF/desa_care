@@ -4,32 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Report extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
+    protected $table = 'laporan';
 
     protected $fillable = [
-        'user_id',
-        'category_id',
-        'title',
-        'description',
-        'photo'
+        'pengguna_id',
+        'kategori_id',
+        'judul',
+        'deskripsi',
+        'foto',
     ];
 
-
-    public function user()
+    public function pengguna()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'pengguna_id');
     }
 
-    public function category()
+    public function kategori()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class, 'kategori_id');
     }
 
-    public function logs()
+    public function logLaporan()
     {
-        return $this->hasMany(ReportLog::class);
+        return $this->hasMany(ReportLog::class, 'laporan_id');
     }
 }

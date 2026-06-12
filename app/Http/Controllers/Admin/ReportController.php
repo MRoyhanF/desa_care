@@ -12,84 +12,81 @@ use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $categories = Category::all();
-        return view('reports.create', compact('categories'));
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $user = Auth::user();
-        $search = $request->input('search');
-        $perPage = $request->input('per_page', 5);
+        $cari = $request->input('cari');
+        $perHalaman = $request->input('per_halaman', 5);
 
-        $query = Report::with(['user', 'category', 'logs' => function($q) {
+        $query = Report::with(['pengguna', 'kategori', 'logLaporan' => function ($q) {
             $q->latest();
         }]);
 
-        // If not admin, only show own reports
-        if ($user->role !== 'admin') {
-            $query->where('user_id', $user->id);
+        if ($user->peran !== 'admin') {
+            $query->where('pengguna_id', $user->id);
         }
 
-        $reports = $query->when($search, function ($q, $search) {
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+        $laporan = $query->when($cari, function ($q, $cari) {
+                $q->where('judul', 'like', "%{$cari}%")
+                  ->orWhere('deskripsi', 'like', "%{$cari}%");
             })
             ->latest()
-            ->paginate($perPage)
+            ->paginate($perHalaman)
             ->onEachSide(1)
             ->withQueryString();
 
-        $categories = Category::all();
+        $kategori = Category::all();
 
-        return view('reports.page', compact('reports', 'search', 'perPage', 'categories'));
+        return view('reports.page', compact('laporan', 'cari', 'perHalaman', 'kategori'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function create()
+    {
+        $kategori = Category::all();
+        return view('reports.create', compact('kategori'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'kategori_id' => 'required|exists:kategori,id',
+            'judul'       => 'required|string|max:255',
+            'deskripsi'   => 'required|string',
+            'foto'        => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'kategori_id.required' => 'Kategori wajib dipilih.',
+            'kategori_id.exists'   => 'Kategori tidak valid.',
+            'judul.required'       => 'Judul laporan wajib diisi.',
+            'deskripsi.required'   => 'Deskripsi laporan wajib diisi.',
+            'foto.image'           => 'File harus berupa gambar.',
+            'foto.mimes'           => 'Format gambar harus jpeg, png, atau jpg.',
+            'foto.max'             => 'Ukuran gambar maksimal 2MB.',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $photoPath = null;
-            if ($request->hasFile('photo')) {
-                $file = $request->file('photo');
+            $fotoPath = null;
+            if ($request->hasFile('foto')) {
+                $file = $request->file('foto');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('reports'), $filename);
-                $photoPath = 'reports/' . $filename;
+                $file->move(public_path('laporan'), $filename);
+                $fotoPath = 'laporan/' . $filename;
             }
 
-            $report = Report::create([
-                'user_id' => Auth::id(),
-                'category_id' => $validated['category_id'],
-                'title' => $validated['title'],
-                'description' => $validated['description'],
-                'photo' => $photoPath,
+            $laporan = Report::create([
+                'pengguna_id' => Auth::id(),
+                'kategori_id' => $validated['kategori_id'],
+                'judul'       => $validated['judul'],
+                'deskripsi'   => $validated['deskripsi'],
+                'foto'        => $fotoPath,
             ]);
 
-            // Create default log
             ReportLog::create([
-                'report_id' => $report->id,
-                'status' => 'pending',
-                'note' => 'Pendataan laporan awal',
-                'updated_by' => Auth::id(),
+                'laporan_id'     => $laporan->id,
+                'status'         => 'menunggu',
+                'catatan'        => 'Pendataan laporan awal.',
+                'diperbarui_oleh' => Auth::id(),
             ]);
 
             DB::commit();
@@ -100,54 +97,51 @@ class ReportController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Report $report)
     {
         $user = Auth::user();
-        if ($user->role !== 'admin' && $report->user_id !== $user->id) {
+        if ($user->peran !== 'admin' && $report->pengguna_id !== $user->id) {
             abort(403);
         }
 
-        $report->load(['user', 'category', 'logs' => function($q) {
+        $report->load(['pengguna', 'kategori', 'logLaporan' => function ($q) {
             $q->latest();
         }]);
 
         return view('reports.show', compact('report'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Report $report)
     {
-        // Only admin can update status (via log) or title/desc
         $user = Auth::user();
-        
-        if ($user->role !== 'admin' && $report->user_id !== $user->id) {
+
+        if ($user->peran !== 'admin' && $report->pengguna_id !== $user->id) {
             abort(403);
         }
 
         $validated = $request->validate([
-            'status' => 'required|in:pending,validated,rejected,on_progress,done',
-            'note' => 'nullable|string',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'status'    => 'required|in:menunggu,tervalidasi,ditolak,diproses,selesai',
+            'catatan'   => 'nullable|string',
+            'judul'     => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+        ], [
+            'status.required'    => 'Status wajib dipilih.',
+            'status.in'          => 'Status tidak valid.',
+            'judul.required'     => 'Judul laporan wajib diisi.',
+            'deskripsi.required' => 'Deskripsi laporan wajib diisi.',
         ]);
 
-        // Status transition logic
-        $latestStatus = $report->logs()->latest()->first()->status ?? 'pending';
-        $newStatus = $validated['status'];
+        $statusTerkini = $report->logLaporan()->latest()->first()->status ?? 'menunggu';
+        $statusBaru = $validated['status'];
 
-        if ($latestStatus !== $newStatus) {
+        if ($statusTerkini !== $statusBaru) {
             $allowed = false;
-            if ($latestStatus === 'pending' && in_array($newStatus, ['validated', 'rejected'])) $allowed = true;
-            if ($latestStatus === 'validated' && $newStatus === 'on_progress') $allowed = true;
-            if ($latestStatus === 'on_progress' && $newStatus === 'done') $allowed = true;
+            if ($statusTerkini === 'menunggu'   && in_array($statusBaru, ['tervalidasi', 'ditolak'])) $allowed = true;
+            if ($statusTerkini === 'tervalidasi' && $statusBaru === 'diproses')                       $allowed = true;
+            if ($statusTerkini === 'diproses'    && $statusBaru === 'selesai')                        $allowed = true;
 
-            if (!$allowed && $user->role === 'admin') {
-                return back()->withErrors(['status' => "Transisi status dari {$latestStatus} ke {$newStatus} tidak diperbolehkan."]);
+            if (!$allowed && $user->peran === 'admin') {
+                return back()->withErrors(['status' => "Transisi status dari '{$statusTerkini}' ke '{$statusBaru}' tidak diperbolehkan."]);
             }
         }
 
@@ -155,16 +149,16 @@ class ReportController extends Controller
             DB::beginTransaction();
 
             $report->update([
-                'title' => $validated['title'],
-                'description' => $validated['description'],
+                'judul'     => $validated['judul'],
+                'deskripsi' => $validated['deskripsi'],
             ]);
 
-            if ($request->filled('status') && $user->role === 'admin' && $latestStatus !== $newStatus) {
+            if ($request->filled('status') && $user->peran === 'admin' && $statusTerkini !== $statusBaru) {
                 ReportLog::create([
-                    'report_id' => $report->id,
-                    'status' => $validated['status'],
-                    'note' => $validated['note'] ?? 'Status diperbarui oleh Admin',
-                    'updated_by' => $user->id,
+                    'laporan_id'      => $report->id,
+                    'status'          => $validated['status'],
+                    'catatan'         => $validated['catatan'] ?? 'Status diperbarui oleh Admin.',
+                    'diperbarui_oleh' => $user->id,
                 ]);
             }
 
@@ -176,13 +170,10 @@ class ReportController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Report $report)
     {
         $user = Auth::user();
-        if ($user->role !== 'admin' && $report->user_id !== $user->id) {
+        if ($user->peran !== 'admin' && $report->pengguna_id !== $user->id) {
             abort(403);
         }
 

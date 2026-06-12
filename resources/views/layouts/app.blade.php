@@ -69,7 +69,7 @@
         <div class="h-full bg-slate-50 dark:bg-slate-950 flex relative">
             
             <!-- Sidebar Area -->
-            @if(Auth::check() && Auth::user()->role === 'admin')
+            @if(Auth::check() && Auth::user()->peran === 'admin')
                 @include('layouts.sidebar.admin')
             @else
                 @include('layouts.sidebar.user')

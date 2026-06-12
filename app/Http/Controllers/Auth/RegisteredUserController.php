@@ -15,31 +15,29 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'nama'       => ['required', 'string', 'max:255'],
+            'email'      => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:pengguna,email'],
+            'kata_sandi' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'nama.required'       => 'Nama wajib diisi.',
+            'email.required'      => 'Email wajib diisi.',
+            'email.unique'        => 'Email sudah digunakan.',
+            'kata_sandi.required' => 'Kata sandi wajib diisi.',
+            'kata_sandi.confirmed'=> 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'nama'       => $request->nama,
+            'email'      => $request->email,
+            'kata_sandi' => Hash::make($request->kata_sandi),
         ]);
 
         event(new Registered($user));

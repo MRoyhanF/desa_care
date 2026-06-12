@@ -39,16 +39,16 @@
                 <div class="px-6 py-6 space-y-4">
                     <!-- Name Input -->
                     <div>
-                        <label for="name" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Kategori</label>
+                        <label for="nama" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Kategori</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                             </div>
-                            <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                                class="block w-full pl-10 bg-slate-50 border-slate-200 dark:bg-slate-800/50 dark:border-slate-700 rounded-lg focus:ring-primary-500 focus:border-primary-500 sm:text-sm text-slate-900 dark:text-white transition-colors @error('name') border-red-500 @enderror"
+                            <input type="text" name="nama" id="nama" value="{{ old('nama') }}" required
+                                class="block w-full pl-10 bg-slate-50 border-slate-200 dark:bg-slate-800/50 dark:border-slate-700 rounded-lg focus:ring-primary-500 focus:border-primary-500 sm:text-sm text-slate-900 dark:text-white transition-colors @error('nama') border-red-500 @enderror"
                                 placeholder="Masukkan nama kategori">
                         </div>
-                        @error('name') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
+                        @error('nama') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
                     </div>
                 </div>
                 

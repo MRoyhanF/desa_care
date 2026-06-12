@@ -11,17 +11,17 @@
         isDeleteModalOpen: false,
         editData: {
             id: '{{ old('id') }}',
-            name: '{{ old('name') }}',
+            nama: '{{ old('nama') }}',
             email: '{{ old('email') }}',
-            phone: '{{ old('phone') }}',
-            role: '{{ old('role', 'user') }}'
+            telepon: '{{ old('telepon') }}',
+            peran: '{{ old('peran', 'pengguna') }}'
         },
         deleteData: {
             id: '',
             name: ''
         },
         openEditModal(user) {
-            this.editData = { ...user };
+            this.editData = { id: user.id, nama: user.nama, email: user.email, telepon: user.telepon, peran: user.peran };
             this.isEditModalOpen = true;
         },
         openDeleteModal(id, name) {
@@ -72,18 +72,18 @@
                         <div class="relative w-full sm:w-auto">
                             <select name="role" onchange="this.form.submit()" class="bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-full focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full pl-4 pr-10 py-2.5 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
                                 <option value="">Semua Peran</option>
-                                <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
+                                <option value="admin" {{ request('peran') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="pengguna" {{ request('peran') == 'pengguna' ? 'selected' : '' }}>Pengguna</option>
                             </select>
                         </div>
 
                         <!-- Items per page -->
                         <div class="relative w-full sm:w-auto">
-                            <select name="per_page" onchange="this.form.submit()" class="bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-full focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full pl-4 pr-10 py-2.5 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
-                                <option value="5" {{ request('per_page') == '5' ? 'selected' : '' }}>5 / hal</option>
-                                <option value="10" {{ request('per_page', '5') == '10' ? 'selected' : '' }}>10 / hal</option>
-                                <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25 / hal</option>
-                                <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50 / hal</option>
+                            <select name="per_halaman" onchange="this.form.submit()" class="bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-full focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full pl-4 pr-10 py-2.5 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
+                                <option value="5" {{ request('per_halaman') == '5' ? 'selected' : '' }}>5 / hal</option>
+                                <option value="10" {{ request('per_halaman', '5') == '10' ? 'selected' : '' }}>10 / hal</option>
+                                <option value="25" {{ request('per_halaman') == '25' ? 'selected' : '' }}>25 / hal</option>
+                                <option value="50" {{ request('per_halaman') == '50' ? 'selected' : '' }}>50 / hal</option>
                             </select>
                         </div>
 
@@ -92,7 +92,7 @@
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             </div>
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari data..." 
+                            <input type="text" name="cari" value="{{ request('cari') }}" placeholder="Cari data..."
                                    class="w-full pl-10 pr-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-slate-300 transition-all shadow-sm hover:bg-slate-50">
                         </div>
                         
@@ -119,35 +119,35 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                            @forelse($users as $user)
+                            @forelse($pengguna as $user)
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                 <td class="px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400">#{{ $user->id }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        @if($user->photo && file_exists(public_path($user->photo)))
-                                            <img src="{{ asset($user->photo) }}" alt="{{ $user->name }}" class="h-8 w-8 rounded-full object-cover border border-slate-100 dark:border-slate-800 shadow-sm">
+                                        @if($user->foto && file_exists(public_path($user->foto)))
+                                            <img src="{{ asset($user->foto) }}" alt="{{ $user->nama }}" class="h-8 w-8 rounded-full object-cover border border-slate-100 dark:border-slate-800 shadow-sm">
                                         @else
                                             <div class="h-8 w-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-xs uppercase">
-                                                {{ substr($user->name, 0, 2) }}
+                                                {{ substr($user->nama, 0, 2) }}
                                             </div>
                                         @endif
-                                        <a href="{{ route('users.show', $user) }}" class="text-sm font-bold text-slate-800 dark:text-slate-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">{{ $user->name }}</a>
+                                        <a href="{{ route('users.show', $user) }}" class="text-sm font-bold text-slate-800 dark:text-slate-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">{{ $user->nama }}</a>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                                     {{ $user->email }}
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
-                                    {{ $user->phone ?? '-' }}
+                                    {{ $user->telepon ?? '-' }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    @if($user->role === 'admin')
+                                    @if($user->peran === 'admin')
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400 border border-primary-200 dark:border-primary-800/50">
                                             Admin
                                         </span>
                                     @else
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                                            User
+                                            Pengguna
                                         </span>
                                     @endif
                                 </td>
@@ -156,11 +156,11 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center justify-center gap-2">
-                                        <button @click="openEditModal({ id: '{{ $user->id }}', name: '{{ $user->name }}', email: '{{ $user->email }}', phone: '{{ $user->phone }}', role: '{{ $user->role }}' })" 
+                                        <button @click="openEditModal({ id: '{{ $user->id }}', nama: '{{ addslashes($user->nama) }}', email: '{{ $user->email }}', telepon: '{{ $user->telepon }}', peran: '{{ $user->peran }}' })"
                                                 class="p-2 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/30 rounded-lg transition-colors" title="Edit">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                         </button>
-                                        <button @click="openDeleteModal('{{ $user->id }}', '{{ $user->name }}')" 
+                                        <button @click="openDeleteModal('{{ $user->id }}', '{{ addslashes($user->nama) }}')"
                                                 class="p-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors" title="Hapus">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
@@ -181,7 +181,7 @@
 
                 <!-- Custom Embedded Pagination (Always shows when there are any results/links, even single page wrapper for consistency) -->
                 <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 w-full flex-col items-center">
-                    {{ $users->links('vendor.pagination.tailwind') }}
+                    {{ $pengguna->links('vendor.pagination.tailwind') }}
                 </div>
             </div>
 

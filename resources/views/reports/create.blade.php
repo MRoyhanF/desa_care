@@ -16,78 +16,68 @@
                 <div class="p-8">
                     <form method="POST" action="{{ route('report.store') }}" enctype="multipart/form-data" class="space-y-6">
                         @csrf
-                        
+
                         <div class="grid grid-cols-1 gap-6">
-                            <!-- Category Selection -->
                             <div>
-                                <label for="category_id" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Kategori Laporan</label>
-                                <div class="relative">
-                                    <select name="category_id" id="category_id" required
-                                        class="block w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary-500 focus:border-primary-500 py-3 px-4 text-slate-900 dark:text-white transition-all shadow-sm">
-                                        <option value="" class="text-slate-900">Pilih Kategori</option>
-                                        @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }} class="text-slate-900">
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                @error('category_id') <p class="mt-2 text-sm text-rose-500">{{ $message }}</p> @enderror
+                                <label for="kategori_id" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Kategori Laporan</label>
+                                <select name="kategori_id" id="kategori_id" required
+                                    class="block w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary-500 focus:border-primary-500 py-3 px-4 text-slate-900 dark:text-white transition-all shadow-sm">
+                                    <option value="">Pilih Kategori</option>
+                                    @foreach($kategori as $kat)
+                                        <option value="{{ $kat->id }}" {{ old('kategori_id') == $kat->id ? 'selected' : '' }}>
+                                            {{ $kat->nama }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('kategori_id') <p class="mt-2 text-sm text-rose-500">{{ $message }}</p> @enderror
                             </div>
 
-                            <!-- Title -->
                             <div>
-                                <label for="title" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Subjek / Judul Laporan</label>
-                                <input type="text" name="title" id="title" value="{{ old('title') }}" required
+                                <label for="judul" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Subjek / Judul Laporan</label>
+                                <input type="text" name="judul" id="judul" value="{{ old('judul') }}" required
                                     class="block w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary-500 focus:border-primary-500 py-3 px-4 text-slate-900 dark:text-white transition-all shadow-sm"
                                     placeholder="Contoh: Lampu Penerangan Jalan Mati">
-                                @error('title') <p class="mt-2 text-sm text-rose-500">{{ $message }}</p> @enderror
+                                @error('judul') <p class="mt-2 text-sm text-rose-500">{{ $message }}</p> @enderror
                             </div>
 
-                            <!-- Description -->
                             <div>
-                                <label for="description" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Isi Pengaduan</label>
-                                <textarea name="description" id="description" rows="5" required
+                                <label for="deskripsi" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Isi Pengaduan</label>
+                                <textarea name="deskripsi" id="deskripsi" rows="5" required
                                     class="block w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary-500 focus:border-primary-500 py-3 px-4 text-slate-900 dark:text-white transition-all shadow-sm"
-                                    placeholder="Ceritakan secara detail kronologi atau masalah yang Anda temui...">{{ old('description') }}</textarea>
-                                @error('description') <p class="mt-2 text-sm text-rose-500">{{ $message }}</p> @enderror
+                                    placeholder="Ceritakan secara detail kronologi atau masalah yang Anda temui...">{{ old('deskripsi') }}</textarea>
+                                @error('deskripsi') <p class="mt-2 text-sm text-rose-500">{{ $message }}</p> @enderror
                             </div>
 
-                            <!-- Photo Upload -->
-                            <div x-data="{ photoName: null, photoPreview: null }">
-                                <label for="photo" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Lampiran Foto (Opsional)</label>
-                                
-                                <input type="file" id="photo" name="photo" class="hidden"
-                                       x-ref="photo"
+                            <div x-data="{ namaFoto: null, pratinjauan: null }">
+                                <label for="foto" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Lampiran Foto (Opsional)</label>
+
+                                <input type="file" id="foto" name="foto" class="hidden"
+                                       x-ref="foto"
                                        @change="
-                                            photoName = $refs.photo.files[0].name;
+                                            namaFoto = $refs.foto.files[0].name;
                                             const reader = new FileReader();
-                                            reader.onload = (e) => {
-                                                photoPreview = e.target.result;
-                                            };
-                                            reader.readAsDataURL($refs.photo.files[0]);
+                                            reader.onload = (e) => { pratinjauan = e.target.result; };
+                                            reader.readAsDataURL($refs.foto.files[0]);
                                        " />
 
                                 <div class="mt-2 flex items-center gap-4">
-                                    <!-- Photo Preview -->
                                     <div class="relative w-32 h-32 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-800">
-                                        <template x-if="!photoPreview">
+                                        <template x-if="!pratinjauan">
                                             <svg class="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                         </template>
-                                        <template x-if="photoPreview">
-                                            <img :src="photoPreview" class="h-full w-full object-cover">
+                                        <template x-if="pratinjauan">
+                                            <img :src="pratinjauan" class="h-full w-full object-cover">
                                         </template>
                                     </div>
-
-                                    <button type="button" @click="$refs.photo.click()" 
+                                    <button type="button" @click="$refs.foto.click()"
                                             class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 shadow-sm hover:bg-slate-50 transition-all">
                                         Pilih Foto
                                     </button>
                                 </div>
-                                <p class="mt-2 text-xs text-slate-400">Maksimal ukuran file 2MB (JPG, PNG)</p>
-                                @error('photo') <p class="mt-2 text-sm text-rose-500">{{ $message }}</p> @enderror
+                                <p class="mt-2 text-xs text-slate-400">Maks. 2MB (JPG, PNG)</p>
+                                @error('foto') <p class="mt-2 text-sm text-rose-500">{{ $message }}</p> @enderror
                             </div>
                         </div>
 

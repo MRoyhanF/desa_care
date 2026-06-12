@@ -3,47 +3,35 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // First delete existing records if we run seed refresh, except if we want to run incrementally, 
-        // but DB::table('users')->insert could crash if emails duplicate. We'll use insertOrIgnore or firstOrCreate 
-        // to ensure the defaults are cleanly created.
-        
         \App\Models\User::firstOrCreate(
             ['email' => 'admin@gmail.com'],
             [
-                'name' => 'Admin',
-                'password' => Hash::make('password123'),
-                'role' => 'admin',
-                'phone' => '08123456789',
-                'email_verified_at' => now(),
+                'nama'                     => 'Admin',
+                'kata_sandi'               => Hash::make('password123'),
+                'peran'                    => 'admin',
+                'telepon'                  => '08123456789',
+                'email_terverifikasi_pada' => now(),
             ]
         );
 
         \App\Models\User::firstOrCreate(
             ['email' => 'user@gmail.com'],
             [
-                'name' => 'User',
-                'password' => Hash::make('password123'),
-                'role' => 'user',
-                'phone' => '08987654321',
-                'email_verified_at' => now(),
+                'nama'                     => 'Pengguna',
+                'kata_sandi'               => Hash::make('password123'),
+                'peran'                    => 'pengguna',
+                'telepon'                  => '08987654321',
+                'email_terverifikasi_pada' => now(),
             ]
         );
 
-        // Generate 50 Users
-        \App\Models\User::factory(50)->create([
-            'role' => 'user'
-        ]);
-
-        // Generate 20 Admins
-        \App\Models\User::factory(20)->create([
-            'role' => 'admin'
-        ]);
+        \App\Models\User::factory(50)->create(['peran' => 'pengguna']);
+        \App\Models\User::factory(20)->create(['peran' => 'admin']);
     }
 }

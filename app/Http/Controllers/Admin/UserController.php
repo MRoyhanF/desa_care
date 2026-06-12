@@ -3,134 +3,119 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        $search = $request->input('search');
-        $role = $request->input('role');
-        $perPage = $request->input('per_page', 5);
+        $cari = $request->input('cari');
+        $peran = $request->input('peran');
+        $perHalaman = $request->input('per_halaman', 5);
 
-        $users = User::query()
-            ->when($search, function ($query, $search) {
-                $query->where(function($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('phone', 'like', "%{$search}%");
+        $pengguna = User::query()
+            ->when($cari, function ($query, $cari) {
+                $query->where(function ($q) use ($cari) {
+                    $q->where('nama', 'like', "%{$cari}%")
+                      ->orWhere('email', 'like', "%{$cari}%")
+                      ->orWhere('telepon', 'like', "%{$cari}%");
                 });
             })
-            ->when($role, function ($query, $role) {
-                $query->where('role', $role);
+            ->when($peran, function ($query, $peran) {
+                $query->where('peran', $peran);
             })
             ->latest()
-            ->paginate($perPage)
+            ->paginate($perHalaman)
             ->onEachSide(1)
             ->withQueryString();
 
-        return view('users.page', compact('users', 'search', 'role', 'perPage'));
+        $users = $pengguna;
+        return view('users.page', compact('users', 'pengguna', 'cari', 'peran', 'perHalaman'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
-            'phone' => ['nullable', 'string', 'max:20', 'unique:users,phone'],
-            'role' => ['required', 'in:admin,user'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'nama'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:pengguna,email'],
+            'telepon'  => ['nullable', 'string', 'max:20', 'unique:pengguna,telepon'],
+            'peran'    => ['required', 'in:admin,pengguna'],
+            'kata_sandi' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'nama.required'         => 'Nama wajib diisi.',
+            'email.required'        => 'Email wajib diisi.',
+            'email.unique'          => 'Email sudah digunakan.',
+            'telepon.unique'        => 'Nomor telepon sudah digunakan.',
+            'peran.required'        => 'Peran wajib dipilih.',
+            'kata_sandi.required'   => 'Kata sandi wajib diisi.',
+            'kata_sandi.min'        => 'Kata sandi minimal 8 karakter.',
+            'kata_sandi.confirmed'  => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'role' => $request->role,
-            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-            'email_verified_at' => now(),
+            'nama'                   => $request->nama,
+            'email'                  => $request->email,
+            'telepon'                => $request->telepon,
+            'peran'                  => $request->peran,
+            'kata_sandi'             => Hash::make($request->kata_sandi),
+            'email_terverifikasi_pada' => now(),
         ]);
 
-        return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan!');
+        return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(User $user)
     {
-        $user->load(['reports.category', 'reports.logs' => function($q) {
+        $user->load(['laporan.kategori', 'laporan.logLaporan' => function ($q) {
             $q->latest();
         }]);
 
         return view('users.show', compact('user'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
 
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users,email,'.$user->id],
-            'phone' => ['nullable', 'string', 'max:20', 'unique:users,phone,'.$user->id],
-            'role' => ['required', 'in:admin,user'],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'nama'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:pengguna,email,' . $user->id],
+            'telepon'  => ['nullable', 'string', 'max:20', 'unique:pengguna,telepon,' . $user->id],
+            'peran'    => ['required', 'in:admin,pengguna'],
+            'kata_sandi' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ], [
+            'nama.required'        => 'Nama wajib diisi.',
+            'email.required'       => 'Email wajib diisi.',
+            'email.unique'         => 'Email sudah digunakan.',
+            'telepon.unique'       => 'Nomor telepon sudah digunakan.',
+            'peran.required'       => 'Peran wajib dipilih.',
+            'kata_sandi.min'       => 'Kata sandi minimal 8 karakter.',
+            'kata_sandi.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
         $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'role' => $request->role,
+            'nama'    => $request->nama,
+            'email'   => $request->email,
+            'telepon' => $request->telepon,
+            'peran'   => $request->peran,
         ];
 
-        if ($request->filled('password')) {
-            $data['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+        if ($request->filled('kata_sandi')) {
+            $data['kata_sandi'] = Hash::make($request->kata_sandi);
         }
 
         $user->update($data);
 
-        return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diperbarui!');
+        return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $user = User::findOrFail($id);
-        
-        // Prevent self-deletion if needed, but for now let's just delete
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus!');
+        return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus.');
     }
 }

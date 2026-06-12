@@ -5,13 +5,13 @@
         </h2>
     </x-slot>
 
-    <div class="py-12" x-data="{ 
+    <div class="py-12" x-data="{
         isModalOpen: {{ $errors->any() && !old('_method') ? 'true' : 'false' }},
         isEditModalOpen: {{ $errors->any() && old('_method') == 'PUT' ? 'true' : 'false' }},
         isDeleteModalOpen: false,
         editData: {
             id: '{{ old('id') }}',
-            name: '{{ old('name') }}'
+            nama: '{{ old('nama') }}'
         },
         deleteData: {
             id: '',
@@ -27,8 +27,7 @@
         }
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
-            <!-- Success Message -->
+
             @if(session('success'))
                 <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between" x-transition.duration.500ms>
                     <div class="flex items-center gap-3">
@@ -36,6 +35,18 @@
                         <p class="text-emerald-800 dark:text-emerald-300 font-medium text-sm">{{ session('success') }}</p>
                     </div>
                     <button @click="show = false" class="text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 flex items-center justify-between" x-transition.duration.500ms>
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p class="text-rose-800 dark:text-rose-300 font-medium text-sm">{{ session('error') }}</p>
+                    </div>
+                    <button @click="show = false" class="text-rose-600 hover:text-rose-800 dark:text-rose-400 dark:hover:text-rose-200 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
@@ -50,11 +61,11 @@
                         </div>
                         <div>
                             <h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">Manajemen Kategori</h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Total {{ $categories->total() }} kategori terdaftar</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Total {{ $kategori->total() }} kategori terdaftar</p>
                         </div>
                     </div>
-                    
-                    <button @click="isModalOpen = true" class="flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-4 py-2.5 rounded-full font-medium text-sm transition-all shadow-lg shadow-primary-500/30">
+
+                    <button @click="isModalOpen = true" class="flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-4 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg shadow-primary-500/30 hover:-translate-y-0.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         <span class="hidden sm:inline">Tambah Kategori</span>
                     </button>
@@ -63,23 +74,24 @@
                 <!-- Search & Filters -->
                 <div class="p-6 sm:p-8 flex flex-col lg:flex-row justify-end items-start lg:items-center gap-4 border-b border-slate-100 dark:border-slate-800">
                     <form method="GET" action="{{ route('category.index') }}" class="w-full lg:w-auto flex flex-col sm:flex-row items-center gap-3">
-                        <!-- Items per page -->
                         <div class="relative w-full sm:w-auto">
-                            <select name="per_page" onchange="this.form.submit()" class="bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-full focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full pl-4 pr-10 py-2.5 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
-                                <option value="5" {{ $perPage == 5 ? 'selected' : '' }}>5 / hal</option>
-                                <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10 / hal</option>
-                                <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25 / hal</option>
+                            <select name="per_halaman" onchange="this.form.submit()" class="bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-full focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full pl-4 pr-10 py-2.5 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
+                                <option value="5" {{ $perHalaman == 5 ? 'selected' : '' }}>5 / hal</option>
+                                <option value="10" {{ $perHalaman == 10 ? 'selected' : '' }}>10 / hal</option>
+                                <option value="25" {{ $perHalaman == 25 ? 'selected' : '' }}>25 / hal</option>
                             </select>
                         </div>
-
-                        <!-- Search Input -->
                         <div class="relative w-full sm:w-64">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             </div>
-                            <input type="text" name="search" value="{{ $search }}" placeholder="Cari kategori..." 
+                            <input type="text" name="cari" value="{{ $cari }}" placeholder="Cari kategori..."
                                    class="w-full pl-10 pr-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-slate-300 transition-all shadow-sm hover:bg-slate-50">
                         </div>
+                        <button type="submit" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-6 py-2.5 rounded-full font-bold text-sm transition-all hover:bg-slate-800 dark:hover:bg-white shadow-lg active:scale-95">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            Cari
+                        </button>
                     </form>
                 </div>
 
@@ -90,27 +102,47 @@
                             <tr class="bg-slate-50/50 dark:bg-slate-800/30 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-semibold">
                                 <th class="px-6 py-5">ID</th>
                                 <th class="px-6 py-5">Nama Kategori</th>
-                                <!-- <th class="px-6 py-5">Dibuat Pada</th> -->
+                                <th class="px-6 py-5 text-center">Status</th>
                                 <th class="px-6 py-5 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                            @forelse($categories as $category)
+                            @forelse($kategori as $category)
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                 <td class="px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400">#{{ $category->id }}</td>
                                 <td class="px-6 py-4">
-                                    <div class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $category->name }}</div>
+                                    <div class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $category->nama }}</div>
                                 </td>
-                                <!-- <td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
-                                    {{ $category->created_at->format('d M Y, H:i') }}
-                                </td> -->
+                                <td class="px-6 py-4 text-center">
+                                    @if($category->aktif)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Aktif</span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">Nonaktif</span>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center justify-center gap-2">
-                                        <button @click="openEditModal({ id: '{{ $category->id }}', name: '{{ $category->name }}' })" 
+                                        <button @click="openEditModal({ id: '{{ $category->id }}', nama: '{{ addslashes($category->nama) }}' })"
                                                 class="p-2 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/30 rounded-lg transition-colors" title="Edit">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                         </button>
-                                        <button @click="openDeleteModal('{{ $category->id }}', '{{ $category->name }}')" 
+
+                                        <!-- Toggle Aktif/Nonaktif -->
+                                        <form method="POST" action="{{ route('category.toggle', $category) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit"
+                                                    class="p-2 rounded-lg transition-colors {{ $category->aktif ? 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}"
+                                                    title="{{ $category->aktif ? 'Nonaktifkan' : 'Aktifkan' }}">
+                                                @if($category->aktif)
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                @else
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                @endif
+                                            </button>
+                                        </form>
+
+                                        <button @click="openDeleteModal('{{ $category->id }}', '{{ addslashes($category->nama) }}')"
                                                 class="p-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors" title="Hapus">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
@@ -129,15 +161,13 @@
                     </table>
                 </div>
 
-                <!-- Pagination -->
-                @if($categories->hasPages())
+                @if($kategori->hasPages())
                 <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 w-full flex-col items-center">
-                    {{ $categories->links('vendor.pagination.tailwind') }}
+                    {{ $kategori->links('vendor.pagination.tailwind') }}
                 </div>
                 @endif
             </div>
 
-            <!-- Modals -->
             @include('category.partials.create')
             @include('category.partials.edit')
             @include('category.partials.delete')

@@ -11,30 +11,30 @@
         isDeleteModalOpen: false,
         editData: {
             id: '{{ old('id') }}',
-            title: '{{ old('title') }}',
-            description: '{{ old('description') }}',
-            category_id: '{{ old('category_id') }}',
-            category_name: '',
-            user_name: '',
+            judul: '{{ old('judul') }}',
+            deskripsi: '{{ old('deskripsi') }}',
+            kategori_id: '{{ old('kategori_id') }}',
+            nama_kategori: '',
+            nama_pengguna: '',
             status: '',
-            photo: '',
-            logs: []
+            foto: '',
+            log_laporan: []
         },
         deleteData: {
             id: '',
             name: ''
         },
         openEditModal(report) {
-            this.editData = { 
+            this.editData = {
                 id: report.id,
-                title: report.title,
-                description: report.description,
-                category_id: report.category_id,
-                category_name: report.category ? report.category.name : '-',
-                user_name: report.user ? report.user.name : '-',
-                status: report.logs.length > 0 ? report.logs[0].status : 'pending',
-                photo: report.photo,
-                logs: report.logs
+                judul: report.judul,
+                deskripsi: report.deskripsi,
+                kategori_id: report.kategori_id,
+                nama_kategori: report.kategori ? report.kategori.nama : '-',
+                nama_pengguna: report.pengguna ? report.pengguna.nama : '-',
+                status: report.log_laporan && report.log_laporan.length > 0 ? report.log_laporan[0].status : 'menunggu',
+                foto: report.foto,
+                log_laporan: report.log_laporan
             };
             this.isEditModalOpen = true;
         },
@@ -67,7 +67,7 @@
                         </div>
                         <div>
                             <h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">Daftar Laporan</h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Menampilkan {{ $reports->total() }} laporan masyarakat</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Menampilkan {{ $laporan->total() }} laporan masyarakat</p>
                         </div>
                     </div>
                     
@@ -82,10 +82,10 @@
                     <form method="GET" action="{{ route('report.index') }}" class="w-full lg:w-auto flex flex-col sm:flex-row items-center gap-3">
                         <!-- Items per page -->
                         <div class="relative w-full sm:w-auto">
-                            <select name="per_page" onchange="this.form.submit()" class="bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-full focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full pl-4 pr-10 py-2.5 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
-                                <option value="5" {{ $perPage == 5 ? 'selected' : '' }}>5 / hal</option>
-                                <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10 / hal</option>
-                                <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25 / hal</option>
+                            <select name="per_halaman" onchange="this.form.submit()" class="bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-full focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full pl-4 pr-10 py-2.5 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
+                                <option value="5" {{ $perHalaman == 5 ? 'selected' : '' }}>5 / hal</option>
+                                <option value="10" {{ $perHalaman == 10 ? 'selected' : '' }}>10 / hal</option>
+                                <option value="25" {{ $perHalaman == 25 ? 'selected' : '' }}>25 / hal</option>
                             </select>
                         </div>
 
@@ -94,7 +94,7 @@
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             </div>
-                            <input type="text" name="search" value="{{ $search }}" placeholder="Cari laporan..." 
+                            <input type="text" name="cari" value="{{ $cari }}" placeholder="Cari laporan..." 
                                    class="w-full pl-10 pr-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-slate-300 transition-all shadow-sm hover:bg-slate-50">
                         </div>
 
@@ -121,41 +121,41 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                            @forelse($reports as $report)
+                            @forelse($laporan as $report)
                             @php
-                                $latestStatus = $report->logs->first()->status ?? 'pending';
+                                $latestStatus = $report->logLaporan->first()->status ?? 'menunggu';
                             @endphp
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                 <td class="px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400">#{{ $report->id }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
-                                        @if($report->user && $report->user->photo && file_exists(public_path($report->user->photo)))
-                                            <img src="{{ asset($report->user->photo) }}" alt="{{ $report->user->name }}" class="h-7 w-7 rounded-full object-cover shadow-sm">
+                                        @if($report->pengguna && $report->pengguna->foto && file_exists(public_path($report->pengguna->foto)))
+                                            <img src="{{ asset($report->pengguna->foto) }}" alt="{{ $report->pengguna->nama }}" class="h-7 w-7 rounded-full object-cover shadow-sm">
                                         @else
                                             <div class="h-7 w-7 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400">
-                                                {{ substr($report->user->name ?? '?', 0, 1) }}
+                                                {{ substr($report->pengguna->nama ?? '?', 0, 1) }}
                                             </div>
                                         @endif
-                                        <div class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $report->user->name ?? 'Anonim' }}</div>
+                                        <div class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $report->pengguna->nama ?? 'Anonim' }}</div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $report->title }}</div>
-                                    <div class="text-[10px] text-slate-400 truncate max-w-[200px]">{{ Str::limit($report->description, 50) }}</div>
+                                    <div class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $report->judul }}</div>
+                                    <div class="text-[10px] text-slate-400 truncate max-w-[200px]">{{ Str::limit($report->deskripsi, 50) }}</div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="text-xs font-medium px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                        {{ $report->category->name ?? '-' }}
+                                        {{ $report->kategori->nama ?? '-' }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    @if($latestStatus === 'pending')
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Pending</span>
-                                    @elseif($latestStatus === 'validated')
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Valid</span>
-                                    @elseif($latestStatus === 'on_progress')
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Proses</span>
-                                    @elseif($latestStatus === 'done')
+                                    @if($latestStatus === 'menunggu')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Menunggu</span>
+                                    @elseif($latestStatus === 'tervalidasi')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Tervalidasi</span>
+                                    @elseif($latestStatus === 'diproses')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Diproses</span>
+                                    @elseif($latestStatus === 'selesai')
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">Selesai</span>
                                     @else
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">Ditolak</span>
@@ -164,14 +164,14 @@
                                 <td class="px-6 py-4 text-xs text-slate-500 dark:text-slate-400">
                                     {{ $report->created_at->format('d/m/Y') }}
                                 </td>
-                                 <td class="px-6 py-4">
+                                <td class="px-6 py-4">
                                     <div class="flex items-center justify-center gap-2">
-                                        <a href="{{ route('report.show', $report) }}" 
-                                           class="p-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg transition-colors" title="Lihat Detail & Pipeline">
+                                        <a href="{{ route('report.show', $report) }}"
+                                           class="p-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg transition-colors" title="Lihat Detail">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                         </a>
-                                        @if(Auth::user()->role === 'admin' || $latestStatus === 'pending')
-                                        <button @click="openDeleteModal('{{ $report->id }}', '{{ $report->title }}')" 
+                                        @if(Auth::user()->peran === 'admin' || $latestStatus === 'menunggu')
+                                        <button @click="openDeleteModal('{{ $report->id }}', '{{ addslashes($report->judul) }}')"
                                                 class="p-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors" title="Hapus">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
@@ -192,9 +192,9 @@
                 </div>
 
                 <!-- Pagination -->
-                @if($reports->hasPages())
+                @if($laporan->hasPages())
                 <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 w-full flex-col items-center">
-                    {{ $reports->links('vendor.pagination.tailwind') }}
+                    {{ $laporan->links('vendor.pagination.tailwind') }}
                 </div>
                 @endif
             </div>

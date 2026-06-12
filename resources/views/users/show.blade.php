@@ -19,11 +19,11 @@
                     <div class="flex flex-col md:flex-row gap-8 items-start">
                         <!-- Profile Photo -->
                         <div class="shrink-0">
-                            @if($user->photo && file_exists(public_path($user->photo)))
-                                <img src="{{ asset($user->photo) }}" alt="{{ $user->name }}" class="h-32 w-32 object-cover rounded-3xl border-4 border-slate-50 dark:border-slate-800 shadow-2xl">
+                            @if($user->foto && file_exists(public_path($user->foto)))
+                                <img src="{{ asset($user->foto) }}" alt="{{ $user->nama }}" class="h-32 w-32 object-cover rounded-3xl border-4 border-slate-50 dark:border-slate-800 shadow-2xl">
                             @else
                                 <div class="h-32 w-32 rounded-3xl bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center border-4 border-slate-50 dark:border-slate-800 shadow-2xl">
-                                    <span class="text-5xl font-black text-primary-600 dark:text-primary-400 capitalize">{{ substr($user->name, 0, 1) }}</span>
+                                    <span class="text-5xl font-black text-primary-600 dark:text-primary-400 capitalize">{{ substr($user->nama, 0, 1) }}</span>
                                 </div>
                             @endif
                         </div>
@@ -32,8 +32,8 @@
                         <div class="flex-1 space-y-6">
                             <div>
                                 <div class="flex items-center gap-3 mb-1">
-                                    <h3 class="text-3xl font-black text-slate-800 dark:text-white">{{ $user->name }}</h3>
-                                    @if($user->role === 'admin')
+                                    <h3 class="text-3xl font-black text-slate-800 dark:text-white">{{ $user->nama }}</h3>
+                                    @if($user->peran === 'admin')
                                         <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400 border border-primary-200 dark:border-primary-800/50">Petugas</span>
                                     @else
                                         <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Warga</span>
@@ -49,11 +49,11 @@
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Nomor Telepon</label>
-                                    <p class="text-sm font-bold text-slate-700 dark:text-slate-200">{{ $user->phone ?? '-' }}</p>
+                                    <p class="text-sm font-bold text-slate-700 dark:text-slate-200">{{ $user->telepon ?? '-' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Laporan</label>
-                                    <p class="text-sm font-bold text-slate-700 dark:text-slate-200">{{ $user->reports->count() }} Laporan</p>
+                                    <p class="text-sm font-bold text-slate-700 dark:text-slate-200">{{ $user->laporan->count() }} Laporan</p>
                                 </div>
                             </div>
                         </div>
@@ -81,28 +81,28 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                            @forelse($user->reports->sortByDesc('created_at') as $report)
+                            @forelse($user->laporan->sortByDesc('created_at') as $report)
                             @php
-                                $ls = $report->logs->first()->status ?? 'pending';
+                                $ls = $report->logLaporan->first()->status ?? 'menunggu';
                             @endphp
                             <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-all">
                                 <td class="px-8 py-5">
                                     <div>
-                                        <p class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $report->title }}</p>
+                                        <p class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $report->judul }}</p>
                                         <p class="text-[10px] text-slate-400">ID: #{{ $report->id }}</p>
                                     </div>
                                 </td>
                                 <td class="px-8 py-5">
-                                    <span class="text-[10px] font-black uppercase px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">{{ $report->category->name }}</span>
+                                    <span class="text-[10px] font-black uppercase px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">{{ $report->kategori->nama }}</span>
                                 </td>
                                 <td class="px-8 py-5">
-                                    @if($ls === 'pending')
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Pending</span>
-                                    @elseif($ls === 'validated')
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Valid</span>
-                                    @elseif($ls === 'on_progress')
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Proses</span>
-                                    @elseif($ls === 'done')
+                                    @if($ls === 'menunggu')
+                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Menunggu</span>
+                                    @elseif($ls === 'tervalidasi')
+                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Tervalidasi</span>
+                                    @elseif($ls === 'diproses')
+                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Diproses</span>
+                                    @elseif($ls === 'selesai')
                                         <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">Selesai</span>
                                     @else
                                         <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">Ditolak</span>

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm /c/Users/ASUS/Documents/php/anothers/desa_care/database/migrations/2014_10_12_100000_create_password_reset_tokens_table.php)",
+      "Bash(rm /c/Users/ASUS/Documents/php/anothers/desa_care/database/migrations/2019_08_19_000000_create_failed_jobs_table.php)",
+      "Bash(rm /c/Users/ASUS/Documents/php/anothers/desa_care/database/migrations/2019_12_14_000001_create_personal_access_tokens_table.php)",
+      "Bash(grep -n '\\\\.name\\\\b\\\\|->name\\\\b\\\\|$user->phone\\\\|$user->role\\\\|$users\\\\b\\\\|$search\\\\b\\\\|$role\\\\b\\\\|$perPage\\\\b\\\\|per_page\\\\|request\\('\\\\''role'\\\\''\\)\\\\|request\\('\\\\''search'\\\\''\\)\\\\|request\\('\\\\''per_page'\\\\''\\)' /c/Users/ASUS/Documents/php/anothers/desa_care/resources/views/users/page.blade.php)",
+      "Bash(grep -n 'category\\\\|->name\\\\b\\\\|->title\\\\b\\\\|->photo\\\\b\\\\|->user\\\\b\\\\|->logs\\\\b\\\\|pending\\\\|validated\\\\|on_progress\\\\|rejected\\\\|\\\\bdone\\\\b\\\\|$reports\\\\b\\\\|$search\\\\b\\\\|$perPage\\\\b\\\\|per_page\\\\|search\\\\b' /c/Users/ASUS/Documents/php/anothers/desa_care/resources/views/reports/page.blade.php)",
+      "Bash(php artisan *)",
+      "Bash(composer remove *)",
+      "Bash(cat /c/Users/ASUS/AppData/Local/Temp/claude/c--Users-ASUS-Documents-php-anothers-desa-care/62bc8c6e-304d-4ed5-b6f3-d75dfdbe2a43/tasks/bi4fcdda2.output 2>&1 | tail -20)",
+      "Read(//c/Users/ASUS/AppData/Local/Temp/claude/c--Users-ASUS-Documents-php-anothers-desa-care/62bc8c6e-304d-4ed5-b6f3-d75dfdbe2a43/tasks/**)",
+      "Bash(grep -v \"^\\\\s*//\")"
+    ]
+  }
+}
