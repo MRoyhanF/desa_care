@@ -74,9 +74,7 @@
 
             <div class="z-10 flex flex-col items-center">
                 <a href="/" class="flex flex-col items-center gap-3 hover:scale-105 transition-transform">
-                    <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-primary-500/30">
-                        BM
-                    </div>
+                    <img src="{{ asset('images/logoMJ.png') }}" alt="Logo Desa" class="w-16 h-16 object-contain">
                 </a>
                 <h1 class="mt-4 text-2xl font-bold text-slate-800 dark:text-slate-200">Desa Bukit Mulya</h1>
                 <p class="text-sm text-slate-500 dark:text-slate-400">Sistem Pengaduan Masyarakat</p>

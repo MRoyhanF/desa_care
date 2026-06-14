@@ -18,18 +18,18 @@
                 <div class="absolute top-0 right-0 -m-4 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl"></div>
                 <div class="relative flex flex-col md:flex-row items-center justify-between gap-6">
                     <div class="flex items-center gap-6">
-                        <div class="w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        </div>
+                        <img src="{{ asset('images/logoMJ.png') }}" alt="Logo Desa" class="w-16 h-16 object-contain">
                         <div>
                             <h3 class="text-2xl font-black text-slate-800 dark:text-white leading-tight">Selamat Datang, {{ Auth::user()->name }}!</h3>
                             <p class="text-slate-500 dark:text-slate-400 font-medium">Sistem Pelayanan Pengaduan Masyarakat {{ Auth::user()->role === 'admin' ? '(Administrator)' : '' }}</p>
                         </div>
                     </div>
                     <div class="flex gap-3">
+                        @if(Auth::user()->role === 'user')
                         <a href="{{ route('report.create') }}" class="px-6 py-3 bg-primary-600 text-white rounded-2xl font-bold text-sm hover:bg-primary-700 transition-all shadow-lg shadow-primary-500/30 hover:-translate-y-0.5">
                             Buat Laporan Baru
                         </a>
+                        @endif
                     </div>
                 </div>
             </div>
